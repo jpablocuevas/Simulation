@@ -4,8 +4,9 @@
 class Random {
 
 	private:
-	
+		
 		double *nums;
+		
 		
 	public: 
 		 
@@ -54,10 +55,8 @@ class Random {
 				max = l;
 			}
 			
-			for (int i = m; i < M; i ++) {
+			for (int i = max; i < M; i ++) {
 			
-			
-				x = 
 			}
 			
 		}
@@ -87,15 +86,19 @@ int main (void) {
 
 	uint M = 2147483647, a = 742938285, b = 1, x0;
 	
+	size_t n_elements;
+	
 	std:: cout << "Enter a seed" << std:: endl;
 	
 	std:: cin >> x0;
 	
+	std:: cout << "Enter the number of random numbers" <<  '\n';
+	
+	std:: cin >> n_elements;
+	
 	Random rand_array;
 	
 	rand_array.lin_cong (M, a, b, x0);
-	
-	size_t n_elements = 35;
 	
 	rand_array.print_arr (n_elements);
 	
