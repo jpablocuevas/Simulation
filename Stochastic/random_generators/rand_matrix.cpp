@@ -2,15 +2,17 @@
 # include <fstream>
 # include <new>
 # include <iomanip>
+# include <ctime>
+# include <cstdlib>
 
 
-class rand_matrix {
+class Rand_matrix {
 		
 	public:
 		
 		typedef long double ld;
 		
-		rand_matrix (ld seed, unsigned int r, unsigned int c) {
+		Rand_matrix (ld seed, unsigned int r, unsigned int c) {
 		
 			X_seed = seed;
 			
@@ -27,12 +29,18 @@ class rand_matrix {
 		
 		std:: fstream file;
 		
-		unsigned int  i, cols, rows, X, X_seed;
+		unsigned int  i, j, cols, rows, X, X_seed;
 		
 		unsigned int M = pow (2, 30) - 1, a = pow (7, 5), b = 0;
 	
 		void create_matrix () {
-		
+			
+			std:: cout << std:: fixed << std:: setprecision (10);
+			
+			// Memory allocation
+			
+			nums = new ld [M];
+			
 			for (i = 0; i < M; i++) {
 			
 				X = (a * X_seed + b) - (unsigned int) ((a * X_seed + b) / M) * M; 
@@ -44,7 +52,9 @@ class rand_matrix {
 				X_seed = X;
 		}
 		
-		file. open ("rand_matrix.txt", std:: ios :: out);
+		std :: cout << "Random sequence finished." << '\n';
+		
+		file.open ("rand_matrix.txt", std:: ios :: out);
 		
 		if (file.fail ()) {
 			
@@ -53,14 +63,40 @@ class rand_matrix {
 			exit (0);
 		}
 		
+		// Matrix filling 
+		
 		for (i = 0; i < rows; i ++) {
 			
-			for (j = 0; j < cols ; i ++) {
+			for (j = 0; j < cols ; j ++) {
 			
-				file >> *()
+				file << *(nums + i + j) << ' ';
 			}
+			
+			file << '\n';
 		}
+		
+		file.close ();
+		
+		delete [] nums;
+	}
 };
+
+
+int main (void) {
+	
+	srand ( (unsigned) time (NULL));
+	
+	unsigned int seed;
+	
+	seed = rand ();
+	
+	size_t rows = 5, columns = 2;
+	
+	Rand_matrix rand (seed, rows, columns);
+	
+	
+	return 0;
+}
 
 			
 

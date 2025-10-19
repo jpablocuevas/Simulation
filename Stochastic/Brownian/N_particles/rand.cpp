@@ -1,6 +1,6 @@
 # include "rand.hpp"
 
-Rand :: Rand (size_t size, unsigned int seed_1, unsigned int seed_2) {
+Rand :: Rand (std :: size_t N, unsigned int seed_1, unsigned int seed_2) {
 	
 	X_1_seed = seed_1;
 			
@@ -8,15 +8,34 @@ Rand :: Rand (size_t size, unsigned int seed_1, unsigned int seed_2) {
 	
 	std:: cout << "Seed 1: " << seed_1 << ". Seed 2: " << seed_2 << '\n';
 	
+	//norm_rand ();
+	
 	Mem mem;
 	
-	mem.set_size (size);
+	ld **X_old, X_new;
 	
-	norm_rand ();
+	X = mem.alloc_matrix (N);
 	
-	delete [] Z_1;
+	for (i = 0; i < N; i ++) {
+		
+		for (j = 0; j < 3; j++) {
+		
+			*(*(X + i) + j) = 1.3485848;
+		}
+	}
 	
-	delete [] Z_2;
+	mem.print_matrix (X, N);
+	
+	mem.modify_matrix (X, N);
+	
+	//delete [] Z_1;
+	
+	//delete [] Z_2;
+	
+	mem.print_matrix (X, N);
+	
+	mem.dealloc_matrix (X, N);
+
 }
 
 
@@ -52,41 +71,6 @@ void Rand:: norm_rand (void) {
 	std:: cout << "Random sequence finished" << '\n';
 }
 		
-/*Rand:: Rand (size_t size, unsigned int seed_1, unsigned int seed_2) {
-	
-	Mem mem;
-	
-	mem.set_size (size);
-	
-	std:: cout << "N = " << N << '\n';
-	
-	/*X_1_seed = seed_1;
-			
-	X_2_seed = seed_2;
-	
-	ld **X;
-	
-	set_size (size);
-	
-	X = alloc_matrix ();
-	
-	norm_rand ();
-	
-	for (i = 0; i < N; i ++) {
-		
-		for (j = 0; j < 3; j ++) {
-			
-			*(*(X + i) + j) = *(Z_1 + i + j);
-		}
-	}
-	
-	print_matrix (X);
-	
-	delete [] Z_1;
-	
-	delete [] Z_2;
-	
-	dealloc_matrix (X);
-}*/
+
 		
 		

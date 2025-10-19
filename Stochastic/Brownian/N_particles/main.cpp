@@ -7,7 +7,7 @@ int main (void) {
 	
 	std:: cout << std:: fixed << std:: setprecision (10);
 	
-	size_t N = 14;
+	std :: size_t N = 14;
 	
 	unsigned int seed_1 = 0, seed_2 = 0;
 	
