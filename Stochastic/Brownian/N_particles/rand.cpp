@@ -1,40 +1,36 @@
 # include "rand.hpp"
 
-Rand :: Rand (std :: size_t N, unsigned int seed_1, unsigned int seed_2) {
+Rand :: Rand (std :: size_t N, unsigned int seed_1, unsigned int seed_2): Mem (N) {
 	
 	X_1_seed = seed_1;
 			
 	X_2_seed = seed_2;
 	
-	std:: cout << "Seed 1: " << seed_1 << ". Seed 2: " << seed_2 << '\n';
+	norm_rand ();
 	
-	//norm_rand ();
+	Mem mem (N);
 	
-	Mem mem;
+	ld **X_old, **X_new;
 	
-	ld **X_old, X_new;
-	
-	X = mem.alloc_matrix (N);
+	X_new = mem.alloc_matrix ();
 	
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j++) {
 		
-			*(*(X + i) + j) = 1.3485848;
+			*(*(X_new + i) + j) = 1.3485848;
 		}
 	}
 	
-	mem.print_matrix (X, N);
-	
-	mem.modify_matrix (X, N);
+	mem.print_matrix (X_new);
 	
 	//delete [] Z_1;
 	
 	//delete [] Z_2;
 	
-	mem.print_matrix (X, N);
+	mem.print_matrix (X_new);
 	
-	mem.dealloc_matrix (X, N);
+	mem.dealloc_matrix (X_new);
 
 }
 

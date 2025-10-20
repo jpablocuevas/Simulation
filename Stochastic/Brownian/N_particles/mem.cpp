@@ -2,12 +2,14 @@
 
 // ---------------------- Memory allocation methods ----------------------
 
+// Class constructor
 
-Mem :: ld **Mem ::  alloc_matrix (std :: size_t N) {
-
-	ld **X;
+Mem :: Mem (std :: size_t matrix_size) {
 	
-	std :: cout << "N = " << N << '\n';
+	N = matrix_size;
+} 
+
+Mem :: ld **Mem ::  alloc_matrix (void) {
 	
 	X = new ld *[N];
 	
@@ -33,10 +35,8 @@ Mem :: ld **Mem ::  alloc_matrix (std :: size_t N) {
 	return X;
 }
 
-Mem :: ld *Mem :: alloc_array (std :: size_t N) {
+Mem :: ld *Mem :: alloc_array (void) {
 
-	ld *x;
-	
 	x = new ld [N];
 	
 	if (x == NULL) {
@@ -49,51 +49,73 @@ Mem :: ld *Mem :: alloc_array (std :: size_t N) {
 	return x;
 }
 
-void Mem:: dealloc_matrix (ld **X, std :: size_t N) {
+void Mem:: dealloc_matrix (ld **M) {
 
 	for (i = 0; i < N; i ++) {
 	
-		delete [] *(X + i);
+		delete [] *(M + i);
 	}
 	
-	delete [] X;
+	delete [] M;
 }
 
-void Mem :: dealloc_array (ld *x) {
+void Mem :: dealloc_array (ld *m) {
 
-	delete [] x;
+	delete [] m;
 }
 
 
-void Mem :: modify_matrix (ld **X, std :: size_t N) {
+void Mem :: set_matrix_rand (ld **M) {
 
+	signed int l;
+	
 	for (i = 0; i < N; i ++) {
 	
 		for (j = 0; j < 3; j ++) {
-	
-			*(*(X + i) + j) =  (ld) rand () / RAND_MAX;
+			
+			if (rand () % 2 == 0) {
+			
+				l = - 1;
+			}
+		
+			*(*(M + i) + j) =  l *(ld) rand () / RAND_MAX;
 		}
 	}
 }
 
-void Mem :: print_matrix (ld **X, std :: size_t N) {
+void Mem :: set_array_rand (ld *m) {
+		
+	signed int l;
+	
+	for (j = 0; j < 3; j ++) {
+		
+		if (rand () % 2 == 0) {
+			
+			l = - 1;
+		}
+		
+		*(m + i) = l * (ld) rand () / RAND_MAX;
+	}
+}
+
+void Mem :: print_matrix (ld **M) {
 
 	for (i = 0; i < N; i ++) {
 	
 		for (j = 0; j < 3; j ++) {
 	
-			std:: cout << *(*(X + i) + j) << ' ';
+			std:: cout << *(*(M + i) + j) << ' ';
 		}
 		
 		std:: cout << '\n';
 	}
 }
 
-void Mem:: print_array (ld *x, std :: size_t N) {
+void Mem:: print_array (ld *m) {
 
 	for (i = 0; i < N; i ++) {
 		
-		std :: cout << *(x + i) << '\n';
+		std :: cout << *(m + i) << '\n';
 	}
 }
 

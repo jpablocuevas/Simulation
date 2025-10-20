@@ -63,13 +63,25 @@ class Rand_matrix {
 			exit (0);
 		}
 		
-		// Matrix filling 
-		
+		// Matrix filling
+		 
+		signed int l;
+		 
 		for (i = 0; i < rows; i ++) {
 			
 			for (j = 0; j < cols ; j ++) {
 			
-				file << *(nums + i + j) << ' ';
+				if (rand () % 2 == 0 ){
+					
+					l = -1;
+				}
+				
+				else {
+					
+					l = 1;
+				}
+				
+				file << 365 * l * *(nums + i + j) << ' ';
 			}
 			
 			file << '\n';
@@ -90,7 +102,7 @@ int main (void) {
 	
 	seed = rand ();
 	
-	size_t rows = 5, columns = 2;
+	size_t rows = 3, columns = 3;
 	
 	Rand_matrix rand (seed, rows, columns);
 	

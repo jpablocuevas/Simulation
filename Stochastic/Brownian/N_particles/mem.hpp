@@ -9,23 +9,35 @@ class Mem {
 
 	public:
 		
+		Mem (std :: size_t);
+		
 		typedef long double ld;
 		
 		unsigned int i, j, k;
 		
-		ld **alloc_matrix (std :: size_t);
+		std :: size_t N;
 		
-		ld *alloc_array (std :: size_t);
+		ld **alloc_matrix (void);
 		
-		void dealloc_matrix (ld **, std :: size_t);
+		ld *alloc_array (void);
+		
+		void dealloc_matrix (ld **);
 		
 		void dealloc_array (ld *);
 		
-		void modify_matrix (ld **, std :: size_t);	
+		void set_matrix_rand (ld **);	
 		
-		void print_matrix (ld **, std :: size_t);
+		void set_array_rand (ld *);
 		
-		void print_array (ld *, std :: size_t);
+		void print_matrix (ld **);
+		
+		void print_array (ld *);
+		
+	private:
+		
+		ld **X = NULL;
+		
+		ld *x = NULL;
 };
 
 
