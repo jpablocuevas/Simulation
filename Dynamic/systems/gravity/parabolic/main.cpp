@@ -9,7 +9,7 @@ int main (void) {
 	
 	std :: size_t N = 3; // Number of particles;
 	
-	Shoot:: ld dt = 0.1, t_f = 800.;
+	Shoot:: ld dt = 0.1, t_f = 120.;
 	
 	Shoot shoot (N, dt, t_f);
 	

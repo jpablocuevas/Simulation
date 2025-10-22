@@ -86,6 +86,8 @@ Shoot :: Shoot (std :: size_t grid_size, ld time_step, ld total_time): Mem (grid
 
 void Shoot :: acc (ld **X, ld **A, std :: size_t N) {
 	
+	unsigned int i, j;
+	
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
@@ -109,7 +111,9 @@ void Shoot :: acc (ld **X, ld **A, std :: size_t N) {
 }
 
 void Shoot :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
-		
+	
+	unsigned int i, j;
+	
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
@@ -120,7 +124,9 @@ void Shoot :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
 }
 
 void Shoot :: update (ld **old_coord, ld **new_coord, std :: size_t N) {
-
+	
+	unsigned int i, j;
+	
 	for (i = 0; i < N; i++) {
 		
 		for (j = 0; j < 3; j++) {
@@ -142,8 +148,10 @@ void Shoot :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std ::
 	
 	A_new = mem.alloc_grid ();
 	 
-	 // Velocity verlet algorithm
-	 
+	// Velocity verlet algorithm
+	
+	unsigned int i, j;
+	
 	while (t < t_f) {
 		
 		acc (X_old, A_old, grid_size);
@@ -162,8 +170,6 @@ void Shoot :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std ::
 		
 		V_step (V_new, V_mid, A_new, grid_size);
 		
-		check (X_new, N);
-		
 		if ((unsigned int) t % 20  == 0) {
 			
 			mem.create_file (X_new, (unsigned int) t);
@@ -179,11 +185,6 @@ void Shoot :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std ::
 		update (A_old, A_new, grid_size);
 		
 		t = t + dt;
-		
-		if (ground == 3) {
-			
-			break;
-		}
 	}
 	
 	// Memory deallocation
