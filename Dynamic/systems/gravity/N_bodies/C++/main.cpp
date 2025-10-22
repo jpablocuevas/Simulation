@@ -6,32 +6,13 @@ int main (void) {
 	
 	srand ( (unsigned) time (NULL));
 	
-	std :: size_t N = 4; // Number of particles;
+	std :: size_t N = 2; // Number of particles;
 	
-	Sys:: ld dt = 0.1, t_f = 1500;
+	Sys:: ld dt = 0.1, t_f = 120;
 	
 	std:: string method = "verlet_vel";
-	
+
 	Sys sys (N, dt, t_f, method);
-	
-	/*Mem mem (N);
-	
-	Mem:: ld **X;
-	
-	X = mem.alloc_grid ();
-	
-	unsigned int i;
-	
-	for (i = 0; i < 10; i ++) {
-		
-		mem.set_grid_rand (X);
-		
-		mem.print_grid (X);
-		
-		std :: cout << '\n';
-	}
-	
-	mem.dealloc_grid (X);*/
 
 	return 0;
 }

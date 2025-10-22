@@ -94,6 +94,8 @@ Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string m
 	
 	mem.print_array (M);
 	
+	std :: cout << '\n';
+	
 	// Calling the simulation algorithm
 	
 	if (method == "verlet_pos") {
@@ -123,6 +125,8 @@ Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string m
 
 void Sys:: X_step (ld **X_mid, ld ** X_old, ld **V_old, std :: size_t N) {
 
+	unsigned int i, j;
+	
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
@@ -135,7 +139,9 @@ void Sys:: X_step (ld **X_mid, ld ** X_old, ld **V_old, std :: size_t N) {
 // Middle step for the velocity, used in the Velocity-Verlet algorithm 
 
 void Sys :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
-		
+	
+	unsigned int i, j;
+	
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
@@ -149,6 +155,8 @@ void Sys :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
 
 void Sys :: update (ld **old_coord, ld **new_coord, std :: size_t N) {
 
+	unsigned int i, j;
+	
 	for (i = 0; i < N; i++) {
 		
 		for (j = 0; j < 3; j++) {
@@ -165,6 +173,8 @@ Mem:: ld Sys:: dis (ld *x, ld *y) {
 
 	ld s = 0., d;
 	
+	unsigned int i;
+	
 	for (i = 0; i < 3; i ++) {
 		
 		d = *(x + i) - *(y + i);
@@ -177,31 +187,38 @@ Mem:: ld Sys:: dis (ld *x, ld *y) {
 
 void Sys:: acc (ld **A, ld **X, ld *M, std :: size_t N) {
 	
-	ld d, s = 0.;
+	ld d;
 	
-	unsigned int l = 0;
+	ld s[3] = {0., 0., 0.}; // Stores the sum of each coordinate contribution
 	
-	for (j = 0; j < 3; j ++) {
-			
-			s = 0.;
-			
-			for (k = 0; k < N; k ++) {
-			 	
-			 	if (k == l) {
-			 		
-			 		s = 0.;
-			 		
-			 		break;
-			 	}
-			 	
-				d = dis (*(X + l), *(X + k));
+	unsigned int i, j, k;
+	
+	for (i = 0; i < N; i ++) {
 
-			 	s = s + *(M + j) * (*(*(X + l) + j) - *(*(X + k) + j)) / pow (d, 3);
+		for (k = 0; k < N; k ++) {
+
+			d = dis (*(X + i), *(X + k));
+			
+			if (d == 0.) {
+				
+				for (j = 0; j < 3; j ++) {
+				
+					*(s + j) = 0.;
+				}
+				
+				break;
+			}
+			
+			for (j = 0; j < 3; j ++) {
+				
+				*(s + j) = *(s + j) - *(M + k) * (*(*(X + i)+ j) - *(*(X + k) + j)) / pow (d, 3);
+			}
 		}
 		
-		*(*(A + l) + j) = - G * s;
-		
-		l ++;
+		for (j = 0; j < 3; j ++) {
+			
+			*(*(A + i) + j) = - G * *(s + j);
+		}
 	}
 }
 
@@ -221,7 +238,9 @@ void Sys :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, ld *M, s
 	A_new = mem.alloc_grid ();
 	 
 	 // Velocity-Verlet loop
-	 
+	
+	unsigned int i, j;
+	
 	while (t < t_f) {
 	
 		acc (A_old, X_old, M, grid_size);
@@ -279,6 +298,8 @@ void Sys:: verlet_pos (ld **X_old, ld **X_new, ld **V_old, ld **V_new, ld *M, st
 	A_mid = mem.alloc_grid ();
 
 	// Verlet-position loop
+	
+	unsigned int i, j;
 	
 	while (t < t_f) {
 		
