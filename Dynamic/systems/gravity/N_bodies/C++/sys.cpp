@@ -211,7 +211,7 @@ void Sys:: acc (ld **A, ld **X, ld *M, std :: size_t N) {
 			
 			for (j = 0; j < 3; j ++) {
 				
-				*(s + j) = *(s + j) - *(M + k) * (*(*(X + i)+ j) - *(*(X + k) + j)) / pow (d, 3);
+				*(s + j) = *(s + j) + *(M + k) * (*(*(X + i)+ j) - *(*(X + k) + j)) / pow (d, 3);
 			}
 		}
 		

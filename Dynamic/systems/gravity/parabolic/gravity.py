@@ -71,7 +71,7 @@ def main (stop : int, step : int) -> None:
 			
 		ax.scatter(positions[i][1][0], positions[i][1][1], positions[i][1][2], marker="*", color = "gold");
 		
-		#ax.scatter(positions[i][2][0], positions[i][2][1], positions[i][2][2], marker="*", color = "forestgreen");
+		ax.scatter(positions[i][2][0], positions[i][2][1], positions[i][2][2], marker="*", color = "forestgreen");
 		
 		#ax.scatter(positions[i][3][0], positions[i][3][1], positions[i][3][2], marker="*", color = "darkblue");
 
@@ -109,10 +109,9 @@ def main (stop : int, step : int) -> None:
 	
 	plt.close ();
 
-
 if ( __name__ == "__main__"):
 	
-	stop : int = 120;
+	stop : int = 460;
 	
 	step : int = 20;
 	

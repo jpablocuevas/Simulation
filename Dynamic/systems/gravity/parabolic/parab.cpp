@@ -85,9 +85,7 @@ Shoot :: Shoot (std :: size_t grid_size, ld time_step, ld total_time): Mem (grid
 }
 
 void Shoot :: acc (ld **X, ld **A, std :: size_t N) {
-	
-	unsigned int i, j;
-	
+
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
@@ -112,8 +110,6 @@ void Shoot :: acc (ld **X, ld **A, std :: size_t N) {
 
 void Shoot :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
 	
-	unsigned int i, j;
-	
 	for (i = 0; i < N; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
@@ -124,8 +120,6 @@ void Shoot :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
 }
 
 void Shoot :: update (ld **old_coord, ld **new_coord, std :: size_t N) {
-	
-	unsigned int i, j;
 	
 	for (i = 0; i < N; i++) {
 		
@@ -149,8 +143,6 @@ void Shoot :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std ::
 	A_new = mem.alloc_grid ();
 	 
 	// Velocity verlet algorithm
-	
-	unsigned int i, j;
 	
 	while (t < t_f) {
 		
