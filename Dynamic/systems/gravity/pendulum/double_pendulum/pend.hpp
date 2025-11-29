@@ -19,11 +19,11 @@ class Double_pend {
 		
 		ld t, g_val, l1, l2, m1, m2;
 		
-		ld *theta_old, *theta_new;
+		ld *theta_old = NULL, *theta_new = NULL;
 		
-		ld *theta_t_old, *theta_t_mid, *theta_t_new;
+		ld *theta_t_old = NULL, *theta_t_mid = NULL, *theta_t_new = NULL;
 		
-		ld *theta_tt_old, *theta_tt_new;
+		ld *theta_tt_old = NULL, *theta_tt_new = NULL;
 		
 		void acc (ld *, ld *, ld *);
 		

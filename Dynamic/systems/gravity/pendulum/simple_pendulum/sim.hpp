@@ -22,7 +22,7 @@ class Pend {
 		
 		ld theta_old, theta_new;
 		
-		ld *x; 
+		ld *x = NULL; 
 		
 		std:: fstream file;
 		
