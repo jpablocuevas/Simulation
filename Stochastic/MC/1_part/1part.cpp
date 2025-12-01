@@ -41,27 +41,23 @@ void Simulate :: print_arr (ld *arr, size_t arr_size) {
 	
 	for (i = 0; i < arr_size; i ++) {
 	
-		std :: cout << *(arr + i) << '\n';
+		std :: cout << *(arr + i) << ", ";
 	}
+	
+	std :: cout << '\n';
 }
 
-Simulate :: Simulate (ld *s, ld *b, unsigned int C, unsigned int M, unsigned int a, size_t n) {
+Simulate :: Simulate (ld *steps, ld *dims, unsigned int C, unsigned int M, unsigned int a, size_t n) {
 	
 	// Random array
 	
-	//nums = rand_arr (M, a, x0);
+	nums = rand_arr (M, a);
 	
 	// Memory management
 	
 	x = new ld [n];
 	
-	lengths = s; 
-	
-	sizes = b;
-	
-	print_arr (lengths, n);
-	
-	print_arr (sizes, n);
+	ld dis, rand_num;
 	
 	// File management
 	
@@ -69,9 +65,30 @@ Simulate :: Simulate (ld *s, ld *b, unsigned int C, unsigned int M, unsigned int
 	
 	file.open ("positions.txt", std :: ios :: out);
 	
-	// Main loop 
+	// Starts the particle at the origin
+	
+	for (j = 0; j < n; j++) {
+		
+		*(x + j) = 0.;
+	}
+	
+	// Simulation
 	
 	std :: cout << "Simulation start. No. of cycles: " << C << '\n';
+	
+	std :: cout << "Step size in each direction (x, y, z): \n";
+	
+	print_arr (steps, n);
+	
+	std :: cout << "Simulation box size (x, y, z):" << '\n';
+	
+	print_arr (dims, n);
+	
+	k = 0;
+	
+	// The variable k traverses the random array elements, which has a size of M - 1. Since the number of coordinates is defined at execution time, a possible bug can occur if the number of cycles is too large, since the random array elements is distributed among each coordinate, i.e., if the particle moves in a 2D plane then one must make sure that M >= 2 * C.
+	
+	// Main loop 
 	
 	for (i = 0; i < C; i ++) {
 		
@@ -79,37 +96,26 @@ Simulate :: Simulate (ld *s, ld *b, unsigned int C, unsigned int M, unsigned int
 			
 			// Moves the particle
 			
-			*(x + j) = *(x + j) + *(lengths+ j) * rand () / RAND_MAX; 
+			*(x + j) = *(x + j) + *(steps + j) * (ld) *(nums + k);
+			
+			k ++;
 			
 			// Checs PBC
 			
-			while (acc == false) {
+			temp = *(x + j); // IMPORTANT
 			
-				if (*(x + j) > *(sizes + j)) {
-				
-					*(x + j) = - *(sizes + j) + abs (*(x + j) - *(sizes + j));
-				}
-			
-				else if (*(x + j) < - *(sizes + j)) {
-				
-					*(x + j) = *(sizes + j) - abs (*(x + j) - *(sizes+ j));
-				}
-				
-				if (abs (*(x + j)) < *(sizes + j)) {
-				
-					acc = true;
-				}
-				
-				else {
-					
-					acc = false;
-				}
+			if (*(x + j) >= *(dims + j)) {
+
+				*(x + j) = - *(dims + j) + (ld) abs (temp - *(dims + j));
 			}
-			
-			acc = false;
-		}
 		
-		if (i % 20 == 0) {
+			else if (*(x + j) < - *(dims + j)) {
+			
+				*(x + j) = *(dims + j) -  (ld) abs (temp + *(dims + j));
+			}
+		}
+
+		if (i % 40 == 0) {
 			
 			for (j = 0; j < n; j ++) {
 				
@@ -120,12 +126,7 @@ Simulate :: Simulate (ld *s, ld *b, unsigned int C, unsigned int M, unsigned int
 		}
 	}
 	
-	print_arr (lengths, n);
-	
-	print_arr (sizes, n);
-	
 	file.close ();
-	
 }
 
 

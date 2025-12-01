@@ -15,7 +15,7 @@ class Simulate {
 	 	
 	 	private:
 	 		
-	 		unsigned int i, j; // Used for cycles
+	 		unsigned int i, j, k;// Used for cycles
 	 		
 	 		ld *nums; // Array of random numbers in (0, 1)
 	 		
@@ -23,7 +23,9 @@ class Simulate {
 	 		
 	 		bool acc; // For PBC
 	 		
-	 		ld *x = NULL, *lengths = NULL, *sizes = NULL; // Particle's position, step sizes in each direction, and box sizes
+	 		ld *x = NULL;  // Particle's position
+	 		
+	 		ld temp;
 	 	
 			ld *rand_arr (unsigned int, unsigned int);
 			
