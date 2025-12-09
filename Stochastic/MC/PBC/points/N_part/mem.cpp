@@ -1,0 +1,129 @@
+# include "mem.hpp"
+
+// Class constructor that initializes a grid. 
+
+Mem :: Mem (size_t n, size_t m) {
+	
+	N = n;
+	
+	M = m;
+	
+	alloc_grid ();
+}
+
+// Class constructor that does nothing
+
+Mem :: Mem () {
+
+	// For some reason the code does not compile if the function argument is void, so it is left empty
+}
+
+void Mem :: alloc_grid (void) {
+
+	X = new ld *[N];
+	
+	if (X == NULL) {
+		
+		std :: cout << "Memory allocation failed.";
+		
+		exit (1);
+	}
+	
+	for (i = 0; i < N; i ++) {
+		
+		*(X + i) = new ld [M];
+		
+		if (*(X + i) == NULL) {
+			
+			std :: cout << "Memory allocation failed.";
+		
+			exit (1);
+		}
+	}
+}
+
+void Mem :: dealloc_grid (void) {
+
+	for (i = 0; i < N; i ++) {
+	
+		delete [] *(X + i);
+	}
+	
+	delete [] X;
+}
+
+void Mem :: get_grid_size (void) {
+	
+	std :: cout << "Number of particles: " << N << '\n';
+	
+	std :: cout << "Number of particles' coordinates: " << M << '\n';
+}
+
+void Mem :: rand_grid (void) {
+	
+	ld num;
+	
+	for (i = 0; i < N; i ++) {
+		
+		for (j = 0; j < M; j ++) {
+		
+			if (rand () % 2 == 0) {
+				
+				num = - (ld) rand () / (ld) RAND_MAX;
+			}
+			
+			else {
+				
+				num = (ld) rand () / (ld) RAND_MAX;
+			}
+			
+			*(*(X + i) + j) = num;
+		}
+	}
+}
+
+void Mem :: print_grid (void) {
+	
+	for (i = 0; i < N; i ++) {
+		
+		for (j = 0; j < M; j ++) {
+			
+			std :: cout << *(*(X + i) + j) << ' ';
+		}
+		
+		std :: cout << '\n';
+	}
+}
+
+void Mem :: print_arr (ld *arr, size_t arr_size) {
+	
+	for (i = 0; i < arr_size; i ++) {
+	
+		std :: cout << *(arr + i) << ", ";
+	}
+	
+	std :: cout << '\n';
+}
+
+void Mem :: create_file (std :: string name) {
+	
+	std:: cout << std:: fixed << std:: setprecision (12);
+			
+	file.open ("positions" + name + ".txt", std :: ios :: out);
+	
+	for (i = 0; i < N; i ++) {
+		
+		for (j = 0; j < M; j ++) {
+		
+			file << *(*(X + i) + j) << ' ';
+		}
+		
+		file << '\n';
+	}
+	
+	file.close ();
+}
+
+
+
+
