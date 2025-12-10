@@ -20,24 +20,26 @@ class Mem {
 		
 		std :: fstream file;
 		
-		void alloc_grid (void);
+		ld **alloc_grid (void);
 		
-		void dealloc_grid (void);
+		void dealloc_grid (ld **X);
 		
-		void get_grid_size (void);
+		void rand_grid (ld **X);
 		
-		void rand_grid (void);
+		void print_grid (ld **X);
 		
-		void print_grid (void);
+		void print_arr (ld *x, size_t m);
 		
-		void print_arr (ld *arr, size_t arr_size);
+		void create_file (ld **X, std :: string name);
+
+		// Constructors
 		
-		void create_file (std :: string name);
+		// Constructor with no parameters. It is used to initialize the class from the Sim class 
 		
-		// Constructors 
+		Mem ();
 		
-		Mem (size_t no_part, size_t no_coord); // This constructor is used when a grid wants to be created
+		// Constructor with parameters to initialize a grid of size N x M
 		
-		Mem (void); // Constructor with no parameters. It is used to initialize the class from the Sim class 
+		Mem (size_t n, size_t m); 
 };
 

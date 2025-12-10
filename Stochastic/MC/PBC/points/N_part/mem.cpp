@@ -1,24 +1,21 @@
 # include "mem.hpp"
 
-// Class constructor that initializes a grid. 
-
-Mem :: Mem (size_t n, size_t m) {
-	
-	N = n;
-	
-	M = m;
-	
-	alloc_grid ();
-}
-
 // Class constructor that does nothing
 
 Mem :: Mem () {
-
-	// For some reason the code does not compile if the function argument is void, so it is left empty
+	
+	// For some reason the code does not compile if "void" is added to the argument in the constructor, so it is left empty
+	
 }
 
-void Mem :: alloc_grid (void) {
+Mem :: Mem (size_t n, size_t m) {
+
+	N = n;
+	
+	M = m;
+}
+
+Mem :: ld ** Mem :: alloc_grid (void) {
 
 	X = new ld *[N];
 	
@@ -40,9 +37,11 @@ void Mem :: alloc_grid (void) {
 			exit (1);
 		}
 	}
+	
+	return X;
 }
 
-void Mem :: dealloc_grid (void) {
+void Mem :: dealloc_grid (ld **X) {
 
 	for (i = 0; i < N; i ++) {
 	
@@ -52,14 +51,7 @@ void Mem :: dealloc_grid (void) {
 	delete [] X;
 }
 
-void Mem :: get_grid_size (void) {
-	
-	std :: cout << "Number of particles: " << N << '\n';
-	
-	std :: cout << "Number of particles' coordinates: " << M << '\n';
-}
-
-void Mem :: rand_grid (void) {
+void Mem :: rand_grid (ld **X) {
 	
 	ld num;
 	
@@ -82,7 +74,7 @@ void Mem :: rand_grid (void) {
 	}
 }
 
-void Mem :: print_grid (void) {
+void Mem :: print_grid (ld **X) {
 	
 	for (i = 0; i < N; i ++) {
 		
@@ -95,17 +87,17 @@ void Mem :: print_grid (void) {
 	}
 }
 
-void Mem :: print_arr (ld *arr, size_t arr_size) {
+void Mem :: print_arr (ld *x, size_t m) {
 	
-	for (i = 0; i < arr_size; i ++) {
+	for (i = 0; i < m; i ++) {
 	
-		std :: cout << *(arr + i) << ", ";
+		std :: cout << *(x + i) << ", ";
 	}
 	
 	std :: cout << '\n';
 }
 
-void Mem :: create_file (std :: string name) {
+void Mem :: create_file (ld **X, std :: string name) {
 	
 	std:: cout << std:: fixed << std:: setprecision (12);
 			

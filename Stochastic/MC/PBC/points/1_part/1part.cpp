@@ -102,16 +102,14 @@ Simulate :: Simulate (ld *steps, ld *dims, unsigned int C, unsigned int M, unsig
 			
 			// Checs PBC
 			
-			temp = *(x + j); // IMPORTANT
-			
 			if (*(x + j) >= *(dims + j)) {
 
-				*(x + j) = - *(dims + j) + (ld) abs (temp - *(dims + j));
+				*(x + j) = - *(dims + j) + (ld) abs (*(x + j) - *(dims + j));
 			}
 		
 			else if (*(x + j) < - *(dims + j)) {
 			
-				*(x + j) = *(dims + j) -  (ld) abs (temp + *(dims + j));
+				*(x + j) = *(dims + j) -  (ld) abs (*(x + j) + *(dims + j));
 			}
 		}
 

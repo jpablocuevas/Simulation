@@ -8,7 +8,11 @@ class Sim : public Mem  {
 		
 	private: 
 		
+		ld *nums;
+		
 		ld* rand_arr (unsigned int, unsigned int);
+		
+		unsigned int rand_count;
 	
 };
 

@@ -47,30 +47,15 @@ Sim :: Sim (size_t no_part, size_t no_coord, ld *steps, ld *dims, unsigned int C
 	
 	// Random array
 	
-	//nums = rand_arr (M_rand, a_rand);
+	nums = rand_arr (M, a);
 	
-	// Grid initialization
+	// Memory management
 	
-	Mem X (no_part, no_coord);
+	Mem mem (no_part, no_coord);
 	
-	X.get_grid_size ();
+	ld **X;
 	
-	X.rand_grid();
-	
-	X.print_grid ();
-	
-	X.dealloc_grid ();
-
-	/*ld dis, rand_num;
-	
-	file.open ("positions.txt", std :: ios :: out);
-	
-	// Starts the particle at the origin
-	
-	for (j = 0; j < n; j++) {
-		
-		*(x + j) = 0.;
-	}
+	X = mem.alloc_grid ();
 	
 	// Simulation
 	
@@ -78,48 +63,54 @@ Sim :: Sim (size_t no_part, size_t no_coord, ld *steps, ld *dims, unsigned int C
 	
 	std :: cout << "Step size in each direction (x, y, z): \n";
 	
-	print_arr (steps, n);
+	print_arr (steps, no_coord);
 	
 	std :: cout << "Simulation box size (x, y, z):" << '\n';
 	
-	print_arr (dims, n);
+	print_arr (dims, no_coord);
 	
-	k = 0;
+	rand_count = 0;
 	
-	// The variable k traverses the random array elements, which has a size of M - 1. Since the number of coordinates is defined at execution time, a possible bug can occur if the number of cycles is too large, since the random array elements is distributed among each coordinate, i.e., if the particle moves in a 2D plane then one must make sure that M >= 2 * C.
+	// The variable rand_count traverses the random array elements, which has a size of M - 1. Since the number of coordinates is defined at execution time, a possible bug can occur if the number of cycles is too large, since the random array elements is distributed among each coordinate, i.e., if the particle moves in a 2D plane then one must make sure that M >= 2 * C.
 	
 	// Main loop 
 	
 	for (i = 0; i < C; i ++) {
 		
-		for (j = 0; j < n; j ++) {
+		for (j = 0; j < no_part; j ++) {
 			
-			// Moves the particle
-			
-			*(x + j) = *(x + j) + *(steps + j) * (ld) *(nums + k);
-			
-			k ++;
-			
-			// Checs PBC
-			
-			temp = *(x + j); // IMPORTANT
-			
-			if (*(x + j) >= *(dims + j)) {
+			for (k = 0; k < no_coord; k ++) {
+				
+				// Moves the particle along the j-th coordinate
+				
+				*(*(X + j) + k) = *(*(X + j) + k) + *(steps + k) * (ld) *(nums + rand_count);
+				
+				rand_count ++;
+				
+				// Checs PBC
+				
+				if (*(*(X + j) + k) >= *(dims + k)) {
 
-				*(x + j) = - *(dims + j) + (ld) abs (temp - *(dims + j));
+					*(*(X + j) + k) = - *(dims + k) + (ld) abs (*(*(X + j) + k)  - *(dims + k));
+				}
+			
+				else if (*(*(X + j) + k)  < - *(dims + k)) {
+				
+					*(*(X + j) + k)  = *(dims + k) -  (ld) abs (*(*(X + j) + k)  + *(dims + k));
+				}
 			}
 		
-			else if (*(x + j) < - *(dims + j)) {
-			
-				*(x + j) = *(dims + j) -  (ld) abs (temp + *(dims + j));
-			}
 		}
 
 		if (i % 40 == 0) {
 			
-			X.create_file (to_string(i));
+			mem.create_file (X, std :: to_string(i));
 		}
 	}
 	
-	file.close ();*/
+	delete [] nums;
+	
+	mem.dealloc_grid (X);
 }
+
+
