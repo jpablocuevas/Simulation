@@ -24,7 +24,7 @@ class Pend {
 		
 		ld *x = NULL; 
 		
-		std:: fstream file;
+		std:: fstream pos_file, ang_file;
 		
 		ld g_val, l_val;
 		

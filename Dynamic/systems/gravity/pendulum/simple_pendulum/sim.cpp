@@ -22,10 +22,10 @@ Pend :: ld Pend :: acc (ld theta) {
 }
 
 void Pend :: Verlet_vel (ld dt, ld t_f) {
-
-	t = 0.;
 	
 	// Initial conditions 
+	
+	t = 0.;
 	
 	std :: cout << "g = " << g_val << '\n';
 	
@@ -37,7 +37,18 @@ void Pend :: Verlet_vel (ld dt, ld t_f) {
 	
 	// Pendulum position file 
 	
-	file.open ("positions.txt", std :: ios :: out);
+	pos_file.open ("positions.txt", std :: ios :: out);
+	
+	ang_file.open ("angle.txt", std :: ios :: out);
+	
+	
+	pos_file << l_val * sin (theta_old) << ' ' << - l_val * cos (theta_old); // x-y plot
+		
+	pos_file << '\n';
+		
+	ang_file << t << ' ' << theta_old; // Angle as a function of time
+	
+	ang_file << '\n';
 	
 	// Verlet algorithm
 	
@@ -57,16 +68,22 @@ void Pend :: Verlet_vel (ld dt, ld t_f) {
 		
 		theta_t_mid = theta_t_new;
 		
-		theta_tt_old = theta_t_new;
+		theta_tt_old = theta_tt_new;
 		
-		file << l_val * cos (theta_new) << ' ' << l_val * sin (theta_new);
+		pos_file << l_val * sin (theta_new) << ' ' << - l_val * cos (theta_new); // For the plot in the x-y plane
 		
-		file << '\n';
+		pos_file << '\n';
+		
+		ang_file << t << ' ' << theta_new; // Angle as a function of time
+		
+		ang_file << '\n';
 		
 		t = t + dt;
 	}
 	
-	file.close ();
+	pos_file.close ();
+	
+	ang_file.close ();
 }
 
 
