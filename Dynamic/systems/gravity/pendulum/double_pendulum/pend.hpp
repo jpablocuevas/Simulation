@@ -25,6 +25,8 @@ class Double_pend {
 		
 		ld *theta_tt_old = NULL, *theta_tt_new = NULL;
 		
+		std :: fstream pos_file, ang_file;
+		
 		void acc (ld *, ld *, ld *);
 		
 		void update (ld *, ld *);

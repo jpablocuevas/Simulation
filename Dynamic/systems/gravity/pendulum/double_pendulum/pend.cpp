@@ -1,6 +1,5 @@
 # include "pend.hpp"
 
-
 Double_pend :: Double_pend (ld dt, ld t_f, ld g, ld *theta_0, ld *theta_t_0, ld *m, ld *l) {	
 	
 	// System setup 
@@ -54,7 +53,7 @@ void Double_pend :: acc (ld *theta, ld *theta_t, ld *theta_tt) {
 	
 	// These new variables are defined for clarity purpouses only, for the expressions for the angular acceleration of both angles are somewhat cumbersome
 	
-	ld theta1, theta2, theta1_t, theta2_t, theta1_tt, theta2_tt;
+	ld theta1, theta2, theta1_t, theta2_t;
 	
 	theta1 = *(theta + 0);
 	theta2 = *(theta + 1);
@@ -62,18 +61,15 @@ void Double_pend :: acc (ld *theta, ld *theta_t, ld *theta_tt) {
 	theta1_t = *(theta_t + 0);
 	theta2_t = *(theta_t + 1);
 	
-	theta1_tt = *(theta_tt + 0);
-	theta2_tt = *(theta_tt + 1);
-	
 	ld d;
 	
 	d = m1 + m2 - m2 * pow (cos(theta1 - theta2), 2);
 	
 	// Acceleration for each angle 
 	
-	theta1_tt = - (g_val * (2 * m1 + m2) * sin(theta1) + g_val * m2 * sin(theta1- 2 * theta2) + l1 * m2 * sin(2 * (theta1 - theta2)) * pow (theta1_t, 2) + 2 * l2 * m2 * sin(theta1 - theta2) * pow (theta2_t, 2)) / (2 * l1 * d); 
+	*(theta_tt + 0) = - (g_val * (2 * m1 + m2) * sin(theta1) + g_val * m2 * sin(theta1- 2 * theta2) + l1 * m2 * sin(2 * (theta1 - theta2)) * pow (theta1_t, 2) + 2 * l2 * m2 * sin(theta1 - theta2) * pow (theta2_t, 2)) / (2 * l1 * d); 
 	
-	theta2_tt = sin (theta1-theta2) * (g_val * (m1 + m2) * cos (theta1) + l1 * (m1 + m2) * pow (theta1_t, 1) + l2 * m2 * cos(theta1 - theta2) * pow (theta2_t, 2)) / (l2 *d);
+	*(theta_tt + 1) = sin (theta1-theta2) * (g_val * (m1 + m2) * cos (theta1) + l1 * (m1 + m2) * pow (theta1_t, 1) + l2 * m2 * cos(theta1 - theta2) * pow (theta2_t, 2)) / (l2 *d);
 	
 }
 
@@ -119,30 +115,38 @@ void Double_pend :: Verlet_vel (ld dt, ld t_f) {
 	
 	// File oppening to map the pendulums' positions
 	
-	std :: fstream file;
+	pos_file.open ("positions.txt", std :: ios :: out);
 	
-	file.open ("positions.txt", std :: ios :: out);
+	ang_file.open ("angles.txt", std :: ios :: out);
 	
 	// Verlet algorithm
 	
 	t = 0;
 	
+	pos_file << l1 * sin (*(theta_old + 0)) << ' ' << - l1 * cos (*(theta_old + 0)) << ' ' << l1 * sin (*(theta_old + 0)) + l2 * sin (*(theta_old + 1)) << ' ' << - l1 * cos (*(theta_old + 0)) - l2 *  cos (*(theta_old + 1));
+		
+		pos_file << '\n';
+		
+		ang_file << t  << ' ' << *(theta_new + 0) << ' ' << *(theta_new + 1);
+		
+		ang_file << '\n';
+		
 	while (t < t_f) {
 		
 		acc (theta_old, theta_t_old, theta_tt_old);
 		
 		for (i = 0; i < 2; i ++) {
 			
-			*(theta_t_mid + i) = *(theta_t_old) + dt / 2. * *(theta_tt_old);
+			*(theta_t_mid + i) = *(theta_t_old + i) + dt / 2. * *(theta_tt_old + i);
 			
-			*(theta_new + i) = *(theta_old) + dt * *(theta_t_mid + i);
+			*(theta_new + i) = *(theta_old + i) + dt * *(theta_t_mid + i);
 		}
 		
 		acc (theta_new, theta_t_new, theta_tt_new);
 		
 		for (i = 0; i < 2; i ++) {
 			
-			*(theta_t_new + i) = *(theta_t_mid) + dt / 2. * *(theta_tt_new);
+			*(theta_t_new + i) = *(theta_t_mid + i) + dt / 2. * *(theta_tt_new + i);
 		}
 		
 		update (theta_old, theta_new);
@@ -153,19 +157,20 @@ void Double_pend :: Verlet_vel (ld dt, ld t_f) {
 		
 		update (theta_tt_old, theta_tt_new);
 		
-		file << l1 * cos (*(theta_new + 0)) << ' ' <<l1 * sin (*(theta_new + 0)) << ' ' << l2 * cos (*(theta_new + 1)) << ' ' << l2 * sin (*(theta_new + 1));
+		pos_file << l1 * sin (*(theta_new + 0)) << ' ' << - l1 * cos (*(theta_new + 0)) << ' ' << l1 * sin (*(theta_new + 0)) + l2 * sin (*(theta_new + 1)) << ' ' << - l1 * cos (*(theta_new + 0)) - l2 *  cos (*(theta_new + 1));
 		
-		file << '\n';
+		pos_file << '\n';
+		
+		ang_file << t  << ' ' << *(theta_new + 0) << ' ' << *(theta_new + 1);
+		
+		ang_file << '\n';
 		
 		t = t + dt;
 	}
 	
-	file.close ();
+	pos_file.close ();
+	
+	ang_file.close ();
 }
-
-
-
-
-
 
 
