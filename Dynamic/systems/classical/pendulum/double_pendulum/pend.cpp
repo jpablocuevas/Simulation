@@ -123,7 +123,7 @@ void Double_pend :: Verlet_vel (ld dt, ld t_f) {
 	
 	t = 0;
 	
-	pos_file << l1 * sin (*(theta_old + 0)) << ' ' << - l1 * cos (*(theta_old + 0)) << ' ' << l1 * sin (*(theta_old + 0)) + l2 * sin (*(theta_old + 1)) << ' ' << - l1 * cos (*(theta_old + 0)) - l2 *  cos (*(theta_old + 1));
+	pos_file << l1 * sin (*(theta_old + 0)) << ' ' << - l1 * cos (*(theta_old + 0)) << ' ' << l1 * sin (*(theta_old + 0)) + l2 * sin (*(theta_old + 1)) << ' ' << - (l1 * cos (*(theta_old + 0)) + l2 *  cos (*(theta_old + 1)));
 		
 		pos_file << '\n';
 		
@@ -157,7 +157,7 @@ void Double_pend :: Verlet_vel (ld dt, ld t_f) {
 		
 		update (theta_tt_old, theta_tt_new);
 		
-		pos_file << l1 * sin (*(theta_new + 0)) << ' ' << - l1 * cos (*(theta_new + 0)) << ' ' << l1 * sin (*(theta_new + 0)) + l2 * sin (*(theta_new + 1)) << ' ' << - l1 * cos (*(theta_new + 0)) - l2 *  cos (*(theta_new + 1));
+		pos_file << l1 * sin (*(theta_new + 0)) << ' ' << - l1 * cos (*(theta_new + 0)) << ' ' << l1 * sin (*(theta_new + 0)) + l2 * sin (*(theta_new + 1)) << ' ' << - (l1 * cos (*(theta_new + 0)) + l2 *  cos (*(theta_new + 1)));
 		
 		pos_file << '\n';
 		
