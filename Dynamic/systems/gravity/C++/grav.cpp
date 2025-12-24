@@ -1,14 +1,16 @@
-# include "sys.hpp"
+# include "grav.hpp"
 
 // Class constructor 
 
-Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string method): Mem (grid_size) {
+NewtGrav:: NewtGrav (size_t set_grid_size, ld time_step, ld total_time): Mem () {
 	
 	// Simulation parameters
 	
 	dt = time_step;
 
 	t_f = total_time;
+	
+	grid_size = set_grid_size;
 	
 	// Memory allocation 
 	
@@ -22,7 +24,11 @@ Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string m
 	
 	V_new = mem.alloc_grid ();
 	
-	M = mem.alloc_array ();
+	M = mem.alloc_arr ();
+	
+	mem.get_size ();
+	
+	std :: cout << "mem in constructor: " << &mem << '\n';
 
 	// Reading the initial conditions from a file
 
@@ -54,7 +60,7 @@ Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string m
 		
 		exit (0);
 	}
-
+	
 	// Reading the initial conditions from a file
 	
 	for (i = 0; i < grid_size; i ++) {
@@ -86,28 +92,19 @@ Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string m
 	
 	std :: cout << '\n';
 	
-	std :: cout << "Number of particles: " << N << '\n';
+	std :: cout << "Number of particles: " << grid_size << '\n';
 	
 	std :: cout << '\n';
 	
 	std :: cout << "Masses: " << '\n';
 	
-	mem.print_array (M);
+	mem.print_arr (M);
 	
 	std :: cout << '\n';
 	
 	// Calling the simulation algorithm
 	
-	if (method == "verlet_pos") {
-
-		verlet_pos (X_old, V_old, X_new, V_new, M, grid_size);
-	
-	}
-	
-	else if (method == "verlet_vel") {
-	
-		verlet_vel (X_old, V_old, X_new, V_new, M, grid_size);
-	}
+	verlet_vel (X_old, V_old, X_new, V_new);
 	
 	// Memory deallocation
 	
@@ -118,16 +115,16 @@ Sys:: Sys (std :: size_t grid_size, ld time_step, ld total_time, std :: string m
 	mem.dealloc_grid (V_old);
 	
 	mem.dealloc_grid (V_new);
-
+	
+	mem.dealloc_arr (M);
+	
 } // The constructor definition does not get a semi-colon at the end 
 	
 // Middle step for the positions, used in the Position-Verlet algorithm
 
-void Sys:: X_step (ld **X_mid, ld ** X_old, ld **V_old, std :: size_t N) {
-
-	unsigned int i, j;
+void NewtGrav:: X_step (ld **X_mid, ld ** X_old, ld **V_old) {
 	
-	for (i = 0; i < N; i ++) {
+	for (i = 0; i < grid_size; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
 		
@@ -138,11 +135,9 @@ void Sys:: X_step (ld **X_mid, ld ** X_old, ld **V_old, std :: size_t N) {
 
 // Middle step for the velocity, used in the Velocity-Verlet algorithm 
 
-void Sys :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
+void NewtGrav :: V_step (ld **V_new, ld **V_mid, ld **A_new) {
 	
-	unsigned int i, j;
-	
-	for (i = 0; i < N; i ++) {
+	for (i = 0; i < grid_size; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
 				
@@ -153,11 +148,9 @@ void Sys :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
 
 // Module that updates old to new coordinates of all particles
 
-void Sys :: update (ld **old_coord, ld **new_coord, std :: size_t N) {
-
-	unsigned int i, j;
+void NewtGrav :: update (ld **old_coord, ld **new_coord) {
 	
-	for (i = 0; i < N; i++) {
+	for (i = 0; i < grid_size; i++) {
 		
 		for (j = 0; j < 3; j++) {
 			
@@ -169,15 +162,13 @@ void Sys :: update (ld **old_coord, ld **new_coord, std :: size_t N) {
 
 // Module that computes the distance between two particles 
 
-Mem:: ld Sys:: dis (ld *x, ld *y) {
+Mem:: ld NewtGrav:: dis (ld *x, ld *y) {
 
 	ld s = 0., d;
 	
-	unsigned int i;
-	
-	for (i = 0; i < 3; i ++) {
+	for (unsigned int i_loc = 0; i_loc < 3; i_loc ++) {
 		
-		d = *(x + i) - *(y + i);
+		d = *(x + i_loc) - *(y + i_loc);
 		
 		s = s + d * d; 
 	}
@@ -185,47 +176,45 @@ Mem:: ld Sys:: dis (ld *x, ld *y) {
 	return sqrt (s);
 }
 
-void Sys:: acc (ld **A, ld **X, ld *M, std :: size_t N) {
+void NewtGrav:: acc (ld **A, ld **X) {
 	
 	ld d;
 	
 	ld s[3] = {0., 0., 0.}; // Stores the sum of each coordinate contribution
-	
-	unsigned int i, j, k;
-	
-	for (i = 0; i < N; i ++) {
 
-		for (k = 0; k < N; k ++) {
-
-			d = dis (*(X + i), *(X + k));
-			
-			if (d == 0.) {
-				
-				for (j = 0; j < 3; j ++) {
-				
-					*(s + j) = 0.;
-				}
-				
-				break;
-			}
-			
-			for (j = 0; j < 3; j ++) {
-				
-				*(s + j) = *(s + j) + *(M + k) * (*(*(X + i)+ j) - *(*(X + k) + j)) / pow (d, 3);
-			}
-		}
-		
+	for (i = 0; i < grid_size; i ++) {
+	
 		for (j = 0; j < 3; j ++) {
 			
+			for (k = 0; k < grid_size; k ++) {
+				
+				d = dis (*(X + i), *(X + k));
+				
+				std :: cout << "d = " << d << '\n';
+				
+				if (d == 0.) {
+					
+					*(s + j)  = 0;
+					
+					break;
+				}
+				
+				*(s + j) = *(s + j) + *(M + k) * (*(*(X + i) + j) - *(*(X + k) + j)) / pow (d, 3);
+			}
+			
 			*(*(A + i) + j) = - G * *(s + j);
+			
+			//std :: cout << "*(s + = " << j << ") = " << *(s + j) << '\n';
 		}
+		
+		std :: cout << '\n';
 	}
 }
 
 
 // Verlet-velocity module 
 
-void Sys :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, ld *M, std :: size_t grid_size) {
+void NewtGrav :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new) {
 	 
 	 // Memory allocation
 	 
@@ -236,14 +225,18 @@ void Sys :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, ld *M, s
 	A_old = mem.alloc_grid ();
 	
 	A_new = mem.alloc_grid ();
-	 
-	 // Velocity-Verlet loop
 	
-	unsigned int i, j;
+	D = mem.alloc_arr ();
+	 
+	// Velocity-Verlet loop
 	
 	while (t < t_f) {
 	
-		acc (A_old, X_old, M, grid_size);
+		acc (A_old, X_old);
+		
+		//mem.print_grid (A_old);
+		
+		//std :: cout << '\n';
 		
 		for (i = 0; i < grid_size; i ++) {
 		
@@ -255,22 +248,22 @@ void Sys :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, ld *M, s
 			}
 		}
 		
-		acc (A_new, X_new, M, grid_size);
+		acc (A_new, X_new);
 		
-		V_step (V_new, V_mid, A_new, grid_size);
+		V_step (V_new, V_mid, A_new);
 		
 		if ((unsigned int) t % 20  == 0) {
 			
 			mem.create_file (X_new, (unsigned int) t);
 		}
 		
-		update (X_old, X_new, grid_size);
+		update (X_old, X_new);
 		
-		update (V_old, V_mid, grid_size);
+		update (V_old, V_mid);
 		
-		update (V_mid, V_new, grid_size);
+		update (V_mid, V_new);
 		
-		update (A_old, A_new, grid_size);
+		update (A_old, A_new);
 		
 		t = t + dt;
 	}
@@ -282,58 +275,8 @@ void Sys :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, ld *M, s
 	mem.dealloc_grid (A_old);
 	
 	mem.dealloc_grid (A_new);
-
-}
-
-// Verlet-position algorithm 
-
-void Sys:: verlet_pos (ld **X_old, ld **X_new, ld **V_old, ld **V_new, ld *M, std :: size_t grid_size) {
 	
-	// Memory allocation 
-	
-	Mem mem (grid_size);
-
-	X_mid = mem.alloc_grid ();
-	
-	A_mid = mem.alloc_grid ();
-
-	// Verlet-position loop
-	
-	unsigned int i, j;
-	
-	while (t < t_f) {
-		
-		X_step (X_mid, X_old, V_old, N);
-		
-		acc (A_mid, X_mid, M, N);
-		
-		for (i = 0; i < N; i ++) { 
-
-			for (j = 0; j < 3; j ++) {
-			
-				*(*(V_new + i) + j) = *(*(V_old + i) + j) + dt * *(*(A_mid + i) + j);
-				
-				*(*(X_new + i) + j) = *(*(X_mid + i) + j) + dt / 2. * *(*(V_new + i) + j);
-			}
-		}
-		
-		update (X_old, X_mid, N);
-		
-		update (X_mid, X_new, N);
-		
-		update (V_old, V_new, N);
-		
-		if ((unsigned int) t % 20  == 0) {
-			
-			mem.create_file (X_new, (unsigned int) t);
-		}
-		
-		t = t + dt;
-	}
-	
-	mem.dealloc_grid (X_mid);
-	
-	mem.dealloc_grid (A_mid);
+	mem.dealloc_arr (D);
 }
 
 

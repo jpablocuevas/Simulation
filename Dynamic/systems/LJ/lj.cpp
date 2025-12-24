@@ -1,30 +1,44 @@
-# include "lj.hpp"
+# include "LennJon.hpp"
 
- Simulate :: Simulate (std :: size_t grid_size, ld time_step, ld total_time): Mem (grid_size) {
+// Class constructor 
+
+LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time): Mem () {
 	
 	// Simulation parameters
 	
 	dt = time_step;
+
+	t_f = total_time;
 	
-	t_f  = total_time;
+	grid_size = set_grid_size;
 	
-	// Memory allocation
+	// Memory allocation 
 	
 	Mem mem (grid_size);
 	
 	X_old = mem.alloc_grid ();
-
+	
 	X_new = mem.alloc_grid ();
 	
 	V_old = mem.alloc_grid ();
-
+	
 	V_new = mem.alloc_grid ();
 	
-	std:: ifstream init_pos, init_vel;
+	M = mem.alloc_arr ();
+	
+	mem.get_size ();
+	
+	std :: cout << "mem in constructor: " << &mem << '\n';
+
+	// Reading the initial conditions from a file
+
+	std:: ifstream init_pos, init_vel, masses;
 
 	init_pos.open ("init_positions.txt", std:: ios:: in);
 
 	init_vel.open ("init_velocities.txt", std:: ios:: in);
+
+	masses.open ("masses.txt", std:: ios:: in);
 
 	if (init_pos.fail () == true ) {
 
@@ -35,14 +49,23 @@
 
 	if (init_vel.fail () == true) {
 
-		std:: cout << "Initial velocities file could not be opened" << '\n';
+		std:: cout << "Initival velocities file could not be opened" << '\n';
 		
 		exit (0);
 	}
 
+	if (masses.fail () == true) {
+
+		std:: cout << "Masses file not be opened" << '\n';
+		
+		exit (0);
+	}
+	
 	// Reading the initial conditions from a file
 	
 	for (i = 0; i < grid_size; i ++) {
+
+		masses >> *(M + i);
 		
 		init_pos >> *(*(X_old + i) + 0) >> *(*(X_old + i) + 1) >> *(*(X_old + i) + 2);
 		
@@ -52,6 +75,8 @@
 	init_pos.close ();
 	
 	init_vel.close ();
+	
+	masses.close ();
 	
 	// Initial conditions
 	
@@ -67,54 +92,52 @@
 	
 	std :: cout << '\n';
 	
-	std :: cout << "Number of particles: " << N << '\n';
+	std :: cout << "Number of particles: " << grid_size << '\n';
 	
 	std :: cout << '\n';
 	
-	// Calling the simuiation algorithm
+	std :: cout << "Masses: " << '\n';
 	
-	verlet_vel (X_old, V_old, X_new, V_new, grid_size);
+	mem.print_arr (M);
+	
+	std :: cout << '\n';
+	
+	// Calling the simulation algorithm
+	
+	verlet_vel (X_old, V_old, X_new, V_new);
+	
+	// Memory deallocation
 	
 	mem.dealloc_grid (X_old);
 	
-	mem.dealloc_grid (V_old);
-	
 	mem.dealloc_grid (X_new);
 	
+	mem.dealloc_grid (V_old);
+	
 	mem.dealloc_grid (V_new);
-}
+	
+	mem.dealloc_arr (M);
+	
+} // The constructor definition does not get a semi-colon at the end 
+	
+// Middle step for the positions, used in the Position-Verlet algorithm
 
-void Simulate :: acc (ld **X, ld **A, std :: size_t N) {
+void LennJon:: X_step (ld **X_mid, ld ** X_old, ld **V_old) {
 	
-	unsigned int i, j;
-	
-	for (i = 0; i < N; i ++) {
+	for (i = 0; i < grid_size; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
 		
-			switch (j) {
-				
-				case 2:
-					
-					*(*(A + i) + j) = - g;
-					
-				break;
-				
-				default:
-				
-				*(*(A + i) + j) = 0.;
-				
-				break;	
-			}	
+			*(*(X_mid + i) + j) = *(*(X_old + i) + j) + dt / 2. * *(*(V_old + i) + j);
 		}
 	}
 }
 
-void Simulate :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
+// Middle step for the velocity, used in the Velocity-Verlet algorithm 
+
+void LennJon :: V_step (ld **V_new, ld **V_mid, ld **A_new) {
 	
-	unsigned int i, j;
-	
-	for (i = 0; i < N; i ++) {
+	for (i = 0; i < grid_size; i ++) {
 		
 		for (j = 0; j < 3; j ++) {
 				
@@ -123,38 +146,72 @@ void Simulate :: V_step (ld **V_new, ld **V_mid, ld **A_new, std :: size_t N) {
 	}
 }
 
-void Simulate :: update (ld **old_coord, ld **new_coord, std :: size_t N) {
+// Module that updates old to new coordinates of all particles
+
+void LennJon :: update (ld **old_coord, ld **new_coord) {
 	
-	unsigned int i, j;
-	
-	for (i = 0; i < N; i++) {
+	for (i = 0; i < grid_size; i++) {
 		
 		for (j = 0; j < 3; j++) {
 			
 			*(*(old_coord + i) + j) = *(*(new_coord + i) + j);
 		}
 	}
+
 }
 
-void Simulate :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std :: size_t grid_size) {
+// Module that computes the distance between two particles 
+
+Mem:: ld LennJon:: dis (ld *x, ld *y) {
+
+	ld s = 0., d;
+	
+	for (unsigned int i_loc = 0; i_loc < 3; i_loc ++) {
+		
+		d = *(x + i_loc) - *(y + i_loc);
+		
+		s = s + d * d; 
+	}
+	
+	return sqrt (s);
+}
+
+void LennJon:: acc (ld **A, ld **X) {
+	
+	ld d;
+	
+	ld s[3] = {0., 0., 0.}; // Stores the sum of each coordinate contribution
+
+	for (i = 0; i < grid_size; i ++) {
+
+}
+
+
+// Verlet-velocity module 
+
+void LennJon :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new) {
 	 
 	 // Memory allocation
 	 
 	Mem mem (grid_size);
-
-	V_mid = mem.alloc_grid ();
 	
+	V_mid = mem.alloc_grid ();
+
 	A_old = mem.alloc_grid ();
 	
 	A_new = mem.alloc_grid ();
-	 
-	// Velocity verlet algorithm
 	
-	unsigned int i, j;
+	D = mem.alloc_arr ();
+	 
+	// Velocity-Verlet loop
 	
 	while (t < t_f) {
+	
+		acc (A_old, X_old);
 		
-		acc (X_old, A_old, grid_size);
+		mem.print_grid (A_old);
+		
+		std :: cout << '\n';
 		
 		for (i = 0; i < grid_size; i ++) {
 		
@@ -166,23 +223,22 @@ void Simulate :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std
 			}
 		}
 		
-		acc (X_new, A_new, grid_size);
+		acc (A_new, X_new);
 		
-		V_step (V_new, V_mid, A_new, grid_size);
+		V_step (V_new, V_mid, A_new);
 		
 		if ((unsigned int) t % 20  == 0) {
 			
 			mem.create_file (X_new, (unsigned int) t);
-			
 		}
 		
-		update (X_old, X_new, grid_size);
+		update (X_old, X_new);
 		
-		update (V_old, V_mid, grid_size);
+		update (V_old, V_mid);
 		
-		update (V_mid, V_new, grid_size);
+		update (V_mid, V_new);
 		
-		update (A_old, A_new, grid_size);
+		update (A_old, A_new);
 		
 		t = t + dt;
 	}
@@ -194,9 +250,8 @@ void Simulate :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new, std
 	mem.dealloc_grid (A_old);
 	
 	mem.dealloc_grid (A_new);
-
+	
+	mem.dealloc_arr (D);
 }
-
-
 
 

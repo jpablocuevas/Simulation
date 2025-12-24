@@ -59,7 +59,7 @@ def main (stop : int, step : int) -> None:
 	
 	positions = read_data (stop, step);
 	
-	print (positions);
+	print_matrix (positions);
 	
 	'''for i in range (0, len (positions), 1):
 		
@@ -71,9 +71,9 @@ def main (stop : int, step : int) -> None:
 			
 		ax.scatter(positions[i][1][0], positions[i][1][1], positions[i][1][2], marker="*", color = "gold");
 		
-		#ax.scatter(positions[i][2][0], positions[i][2][1], positions[i][2][2], marker="*", color = "forestgreen");
+		ax.scatter(positions[i][2][0], positions[i][2][1], positions[i][2][2], marker="*", color = "forestgreen");
 		
-		#ax.scatter(positions[i][3][0], positions[i][3][1], positions[i][3][2], marker="*", color = "darkblue");
+		ax.scatter(positions[i][3][0], positions[i][3][1], positions[i][3][2], marker="*", color = "darkblue");
 
 		ax.set_xlabel('x');
 		
@@ -95,6 +95,10 @@ def main (stop : int, step : int) -> None:
 		ax.scatter(positions[i][0][0], positions[i][0][1], positions[i][0][2], marker="*", color = "rebeccapurple");
 		
 		ax.scatter(positions[i][1][0], positions[i][1][1], positions[i][1][2], marker="*", color = "gold");
+		
+		#ax.scatter(positions[i][2][0], positions[i][2][1], positions[i][2][2], marker="*", color = "forestgreen");
+		
+		#ax.scatter(positions[i][3][0], positions[i][3][1], positions[i][3][2], marker="*", color = "darkblue");
 	
 
 	ax.set_xlabel('x');
@@ -110,7 +114,7 @@ def main (stop : int, step : int) -> None:
 
 if ( __name__ == "__main__"):
 	
-	stop : int = 120;
+	stop : int = 500;
 	
 	step : int = 20;
 	

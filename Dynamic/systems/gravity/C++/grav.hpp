@@ -1,6 +1,6 @@
 # include "mem.hpp"
 
-class LennJon: public Mem {
+class NewtGrav: public Mem {
 
 	private:
 		
@@ -49,7 +49,7 @@ class LennJon: public Mem {
 		
 		// Class constructor. It initializes the simulation.
 		
-		LennJon (size_t, ld, ld);  
+		NewtGrav (size_t, ld, ld);  
 
 };
 

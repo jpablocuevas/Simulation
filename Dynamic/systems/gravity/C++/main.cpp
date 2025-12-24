@@ -1,4 +1,4 @@
-# include "sys.hpp"
+# include "grav.hpp"
 
 int main (void) {
 	
@@ -8,9 +8,9 @@ int main (void) {
 	
 	size_t N = 2; // Number of particles;
 	
-	Sys:: ld dt = 0.1, t_f = 500;
+	Mem :: ld dt = 0.1, t_f = 500;
 
-	Sys sys (N, dt, t_f);
+	NewtGrav NewtGrav (N, dt, t_f);
 
 	return 0;
 }

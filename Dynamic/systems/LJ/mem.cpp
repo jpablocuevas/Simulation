@@ -2,14 +2,23 @@
 
 // ---------------------------- Mem allocation methods ----------------------
 
-// Class constructor
+// Class constructors
 
-Mem :: Mem (std :: size_t grid_size) {
+Mem :: Mem (size_t grid_size) {
 	
 	N = grid_size;
 }
 
+Mem :: Mem () {
+
+}
+
 // Allocates a 2D pointer to store in each index an array which in turns contains the Cartesian coordinates of each particle 
+
+void Mem :: get_size (void) {
+	
+	std :: cout << "N = " << N << '\n';	
+}
 
 Mem :: ld **Mem:: alloc_grid (void) {
 
@@ -39,7 +48,7 @@ Mem :: ld **Mem:: alloc_grid (void) {
 
 // This function does not directly deallocate the created grid, since the grid is to be used in the solvers code it is returned as a parameter, and is therefore "lost". This function deallocates an arbitrary 2D dynamic pointer
 
-Mem :: ld *Mem :: alloc_array (void) {
+Mem :: ld *Mem :: alloc_arr (void) {
 
 	x = new ld [N];
 	
@@ -56,7 +65,7 @@ void Mem :: dealloc_grid (ld **grid) {
 	delete [] grid;
 }
 
-void Mem :: dealloc_array (ld *arr) {
+void Mem :: dealloc_arr (ld *arr) {
 	
 	delete [] arr;
 }
@@ -73,13 +82,18 @@ void Mem :: set_grid_rand (ld **grid) {
 			
 				l = - 1;
 			}
+			
+			else {
+				
+				l  = 1;
+			}
 		
 			*(*(grid + i) + j) = l * (ld) rand () / RAND_MAX;
 		}
 	}
 }
 
-void Mem :: set_array_rand (ld *arr) {
+void Mem :: set_arr_rand (ld *arr) {
 	
 	signed int l = 1;
 	
@@ -88,6 +102,11 @@ void Mem :: set_array_rand (ld *arr) {
 		if (rand () % 2 == 0) {
 			
 			l = - 1;
+		}
+		
+		else {
+			
+			l = 1;
 		}
 		
 		*(arr + i) = l * (ld) rand () / RAND_MAX;
@@ -110,14 +129,15 @@ void Mem :: print_grid (ld **grid) {
 }
 
 
-void Mem:: print_array (ld *arr) {
+void Mem:: print_arr (ld *arr) {
 	
 	for (i = 0; i < N; i ++) {
 		
 			std:: cout << *(arr + i) << '\n';
 	}
 }
-// Printing tensor components to a text file
+
+// Printing grid components to a text file
 
 void Mem:: create_file (ld **grid, unsigned int name) {
 	

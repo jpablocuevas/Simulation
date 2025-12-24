@@ -12,37 +12,42 @@ class Mem {
 
 	public:
 		
-		Mem (std :: size_t);
+		Mem (size_t);
+		
+		Mem ();
 		
 		typedef long double ld;
 
-		unsigned int i, j, k; // Used for cycles. 
+		unsigned int i, j, k, l; // Used for cycles. 
 		
-		std :: size_t N; // Number of particles in the simulation
+		size_t N; // Number of particles in the simulation
 		
 		std:: fstream file; // File object to print particles coordinates. 
 		
 		ld **alloc_grid (void);
 		
-		ld *alloc_array (void);
+		ld *alloc_arr (void);
+		
+		void get_size (void);
 
-		void dealloc_grid (ld **);
+		void dealloc_grid (ld **grid);
 		
-		void dealloc_array (ld *);
+		void dealloc_arr (ld *arr);
 		
-		void set_grid_rand (ld **);
+		void set_grid_rand (ld **grid);
 		
-		void set_array_rand (ld *);
+		void set_arr_rand (ld *arr);
 		
-		void print_grid (ld **);
+		void print_grid (ld **grid);
 		
-		void print_array (ld *);
+		void print_arr (ld *arr);
 		
-		void create_file (ld **, unsigned int);
+		void create_file (ld **grid, unsigned int);
 		
 		ld **X = NULL;
 		
 		ld *x = NULL;
+		
 };
 
 
