@@ -59,6 +59,10 @@ Sim :: Sim (size_t no_part, size_t no_coord, ld *steps, ld *dims, unsigned int C
 	
 	// Simulation
 	
+	// Starting from a lattice configuration
+	
+	lattice_start (X);
+	
 	std :: cout << "Simulation start. No. of cycles: " << C << '\n';
 	
 	std :: cout << "Step size in each direction (x, y, z): \n";

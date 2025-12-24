@@ -10,9 +10,11 @@ class Sim : public Mem  {
 		
 		ld *nums;
 		
+		unsigned int rand_count;
+		
 		ld* rand_arr (unsigned int, unsigned int);
 		
-		unsigned int rand_count;
+		void lattice_start (ld **X)
 	
 };
 
