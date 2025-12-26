@@ -8,7 +8,7 @@ int main (void) {
 	
 	size_t N = 2; // Number of particles;
 	
-	Mem :: ld dt = 0.1, t_f = 500;
+	Mem :: ld dt = 0.1, t_f = 5000;
 
 	NewtGrav NewtGrav (N, dt, t_f);
 

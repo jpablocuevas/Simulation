@@ -114,7 +114,7 @@ def main (stop : int, step : int) -> None:
 
 if ( __name__ == "__main__"):
 	
-	stop : int = 500;
+	stop : int = 5000;
 	
 	step : int = 20;
 	

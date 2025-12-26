@@ -183,31 +183,32 @@ void NewtGrav:: acc (ld **A, ld **X) {
 	ld s[3] = {0., 0., 0.}; // Stores the sum of each coordinate contribution
 
 	for (i = 0; i < grid_size; i ++) {
-	
+		
 		for (j = 0; j < 3; j ++) {
 			
 			for (k = 0; k < grid_size; k ++) {
 				
-				d = dis (*(X + i), *(X + k));
-				
-				std :: cout << "d = " << d << '\n';
-				
-				if (d == 0.) {
+				if (i == k) {
 					
-					*(s + j)  = 0;
-					
-					break;
+					continue;
 				}
 				
-				*(s + j) = *(s + j) + *(M + k) * (*(*(X + i) + j) - *(*(X + k) + j)) / pow (d, 3);
+				d  = dis (*(X + i), *(X + k));
+
+				*(s + j) = *(s + j) + *(M + k) * (*(*(X + i) + j) - *(*(X + k) + j)) / pow (d , 3);
+				
 			}
 			
 			*(*(A + i) + j) = - G * *(s + j);
 			
-			//std :: cout << "*(s + = " << j << ") = " << *(s + j) << '\n';
+			//std :: cout << "*(*(A + " << i << ") + " << j << ") = " << *(*(A + i) + j) << '\n';
+					
+			*(s + j) = 0.;
+			
 		}
+		//std :: cout << "*(s + = " << j << ") = " << *(s + j) << '\n';
 		
-		std :: cout << '\n';
+		//std :: cout << "End loop" << '\n';
 	}
 }
 
@@ -225,8 +226,6 @@ void NewtGrav :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new) {
 	A_old = mem.alloc_grid ();
 	
 	A_new = mem.alloc_grid ();
-	
-	D = mem.alloc_arr ();
 	 
 	// Velocity-Verlet loop
 	
@@ -275,8 +274,6 @@ void NewtGrav :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new) {
 	mem.dealloc_grid (A_old);
 	
 	mem.dealloc_grid (A_new);
-	
-	mem.dealloc_arr (D);
 }
 
 
