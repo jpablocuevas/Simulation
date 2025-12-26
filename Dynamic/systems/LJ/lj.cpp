@@ -1,14 +1,18 @@
-# include "LennJon.hpp"
+# include "lj.hpp"
 
 // Class constructor 
 
-LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time): Mem () {
+LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time, ld set_sigma, ld set_epsilon): Mem () {
 	
 	// Simulation parameters
 	
 	dt = time_step;
 
 	t_f = total_time;
+	
+	sigma = set_sigma;
+	
+	epsilon = set_epsilon;
 	
 	grid_size = set_grid_size;
 	
@@ -18,12 +22,8 @@ LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time): Mem () {
 	
 	X_old = mem.alloc_grid ();
 	
-	X_new = mem.alloc_grid ();
-	
 	V_old = mem.alloc_grid ();
-	
-	V_new = mem.alloc_grid ();
-	
+
 	M = mem.alloc_arr ();
 	
 	mem.get_size ();
@@ -104,23 +104,19 @@ LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time): Mem () {
 	
 	// Calling the simulation algorithm
 	
-	verlet_vel (X_old, V_old, X_new, V_new);
+	Verlet (X_old, V_old);
 	
 	// Memory deallocation
 	
 	mem.dealloc_grid (X_old);
 	
-	mem.dealloc_grid (X_new);
-	
 	mem.dealloc_grid (V_old);
-	
-	mem.dealloc_grid (V_new);
 	
 	mem.dealloc_arr (M);
 	
 } // The constructor definition does not get a semi-colon at the end 
 	
-// Middle step for the positions, used in the Position-Verlet algorithm
+// Middle step for the positions, used in the Verlet integration algorithm
 
 void LennJon:: X_step (ld **X_mid, ld ** X_old, ld **V_old) {
 	
@@ -128,20 +124,7 @@ void LennJon:: X_step (ld **X_mid, ld ** X_old, ld **V_old) {
 		
 		for (j = 0; j < 3; j ++) {
 		
-			*(*(X_mid + i) + j) = *(*(X_old + i) + j) + dt / 2. * *(*(V_old + i) + j);
-		}
-	}
-}
-
-// Middle step for the velocity, used in the Velocity-Verlet algorithm 
-
-void LennJon :: V_step (ld **V_new, ld **V_mid, ld **A_new) {
-	
-	for (i = 0; i < grid_size; i ++) {
-		
-		for (j = 0; j < 3; j ++) {
-				
-			*(*(V_new + i) + j) = *(*(V_mid + i) + j) + dt / 2. *  *(*(A_new + i) + j);
+			*(*(X_mid + i) + j) = *(*(X_old + i) + j) + dt * *(*(V_old + i) + j);
 		}
 	}
 }
@@ -176,82 +159,108 @@ Mem:: ld LennJon:: dis (ld *x, ld *y) {
 	return sqrt (s);
 }
 
-void LennJon:: acc (ld **A, ld **X) {
+void LennJon:: force (ld **F, ld **X) {
 	
 	ld d;
 	
-	ld s[3] = {0., 0., 0.}; // Stores the sum of each coordinate contribution
+	ld s [3] = {0., 0., 0.};
 
 	for (i = 0; i < grid_size; i ++) {
-
+		
+		for (j = 0; j < 3; j ++) {
+			
+			for (k = 0; k < grid_size; k ++) {
+				
+				if (i == k) {
+				
+				continue;
+				
+				}
+				
+				d = dis (*(X + i), *(X + k));
+				
+				*(s + j) = *(s + j) + (pow (sigma, 12.) / pow (d, 14.) + pow (sigma, 6) / (2 * pow (d, 8.))) * (*(*(X + i) + j) - *(*(X + k) + j));
+			
+			}
+			
+			*(*(F + i) + j) = 48 * epsilon * *(s + j);
+			
+			*(s + j) = 0.;
+		}
+	}
 }
 
 
-// Verlet-velocity module 
+// Verlet algorithm module  
 
-void LennJon :: verlet_vel (ld **X_old, ld **V_old, ld **X_new, ld **V_new) {
+void LennJon :: Verlet (ld **X_old, ld **V_old) {
 	 
 	 // Memory allocation
 	 
 	Mem mem (grid_size);
 	
-	V_mid = mem.alloc_grid ();
-
-	A_old = mem.alloc_grid ();
+	X_mid = mem.alloc_grid ();
 	
-	A_new = mem.alloc_grid ();
+	X_new = mem.alloc_grid ();
 	
-	D = mem.alloc_arr ();
+	dX = mem.alloc_grid ();
+	
+	V_new = mem.alloc_grid ();
+	
+	F_old = mem.alloc_grid ();
+	
+	F_mid = mem.alloc_grid ();
 	 
-	// Velocity-Verlet loop
+	// Verlet loop
 	
 	while (t < t_f) {
-	
-		acc (A_old, X_old);
 		
-		mem.print_grid (A_old);
+		force (F_old, X_old);
 		
-		std :: cout << '\n';
+		X_step (X_mid, X_old, V_old);
+		
+		force (F_mid, X_mid);
 		
 		for (i = 0; i < grid_size; i ++) {
-		
+			
 			for (j = 0; j < 3; j ++) {
-		
-				*(*(V_mid + i) + j) = *(*(V_old + i) + j) + dt / 2. * *(*(A_old + i) + j);
 				
-				*(*(X_new + i) + j) = *(*(X_old + i) + j) + dt * *(*(V_mid + i) + j);
+				// Position update
+				
+				*(*(dX + i) + j) = *(*(X_mid + i) + j) - *(*(X_old + i) + j) + *(*(F_mid + i) + j) / *(M + i) * dt * dt;
+				
+				*(*(X_new + i) + j) = *(*(X_mid + i) + j) + *(*(dX + i) + j);
+				
+				// Velocity update for the calculation of the kinetic energy
+				
+				*(*(V_new + i) + j) = *(*(dX + i) + j) / dt + (5 * *(*(F_mid + i) + j) - 2 * *(*(F_old + i) + j)) / (6 * *(M + i)) * dt;
+				
 			}
 		}
-		
-		acc (A_new, X_new);
-		
-		V_step (V_new, V_mid, A_new);
 		
 		if ((unsigned int) t % 20  == 0) {
 			
 			mem.create_file (X_new, (unsigned int) t);
 		}
-		
-		update (X_old, X_new);
-		
-		update (V_old, V_mid);
-		
-		update (V_mid, V_new);
-		
-		update (A_old, A_new);
+
 		
 		t = t + dt;
 	}
 	
 	// Memory deallocation
-
-	mem.dealloc_grid (V_mid);
-
-	mem.dealloc_grid (A_old);
 	
-	mem.dealloc_grid (A_new);
+	mem.dealloc_grid (X_mid);
 	
-	mem.dealloc_arr (D);
+	mem.dealloc_grid (dX);
+	
+	mem.dealloc_grid (X_new);
+	
+	mem.dealloc_grid (V_new);
+
+	mem.dealloc_grid (F_old);
+	
+	mem.dealloc_grid (F_mid);
+
 }
 
 

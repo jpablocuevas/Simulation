@@ -1,4 +1,4 @@
-# include "sys.hpp"
+# include "lj.hpp"
 
 int main (void) {
 	
@@ -6,11 +6,15 @@ int main (void) {
 	
 	srand ( (unsigned) time (NULL));
 	
-	size_t N = 2; // Number of particles;
+	size_t N = 4; // Number of particles;
 	
-	Sys:: ld dt = 0.1, t_f = 500;
+	LennJon:: ld dt = 0.1, t_f = 500, epsilon, sigma;
+	
+	sigma = 3.405 * pow (10, -10);
+	
+	epsilon = 1.654 * pow (10, -21);
 
-	Sys sys (N, dt, t_f);
+	LennJon sim (N, dt, t_f, sigma, epsilon);
 
 	return 0;
 }
