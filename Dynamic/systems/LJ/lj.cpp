@@ -2,7 +2,7 @@
 
 // Class constructor 
 
-LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time, ld set_sigma, ld set_epsilon): Mem () {
+LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time, ld set_sigma, ld set_epsilon, ld set_m, ld set_cube_side): Mem () {
 	
 	// Simulation parameters
 	
@@ -14,7 +14,11 @@ LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time, ld set_sig
 	
 	epsilon = set_epsilon;
 	
+	m = set_m;
+	
 	grid_size = set_grid_size;
+	
+	L = set_cube_side;
 	
 	// Memory allocation 
 	
@@ -24,84 +28,25 @@ LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time, ld set_sig
 	
 	V_old = mem.alloc_grid ();
 
-	M = mem.alloc_arr ();
-	
-	mem.get_size ();
-	
-	std :: cout << "mem in constructor: " << &mem << '\n';
-
-	// Reading the initial conditions from a file
-
-	std:: ifstream init_pos, init_vel, masses;
-
-	init_pos.open ("init_positions.txt", std:: ios:: in);
-
-	init_vel.open ("init_velocities.txt", std:: ios:: in);
-
-	masses.open ("masses.txt", std:: ios:: in);
-
-	if (init_pos.fail () == true ) {
-
-		std:: cout << "Initial positions file could not be opened" << '\n';
-		
-		exit (0);
-	}
-
-	if (init_vel.fail () == true) {
-
-		std:: cout << "Initival velocities file could not be opened" << '\n';
-		
-		exit (0);
-	}
-
-	if (masses.fail () == true) {
-
-		std:: cout << "Masses file not be opened" << '\n';
-		
-		exit (0);
-	}
-	
-	// Reading the initial conditions from a file
-	
-	for (i = 0; i < grid_size; i ++) {
-
-		masses >> *(M + i);
-		
-		init_pos >> *(*(X_old + i) + 0) >> *(*(X_old + i) + 1) >> *(*(X_old + i) + 2);
-		
-		init_vel >> *(*(V_old + i) + 0) >> *(*(V_old + i) + 1) >> *(*(V_old + i) + 2);
-	}
-	
-	init_pos.close ();
-	
-	init_vel.close ();
-	
-	masses.close ();
-	
 	// Initial conditions
 	
-	std :: cout << "Initial positions: " << '\n';
+	init_grid_cube ();
 	
-	mem.print_grid (X_old);
-	
-	std :: cout << '\n';
-	
-	std :: cout << "Initial velocities: " << '\n';
-	
-	mem.print_grid (V_old);
-	
-	std :: cout << '\n';
+	init_vel_rand ();
 	
 	std :: cout << "Number of particles: " << grid_size << '\n';
 	
 	std :: cout << '\n';
 	
-	std :: cout << "Masses: " << '\n';
+	std :: cout << "Simulation parameters: " << '\n';
 	
-	mem.print_arr (M);
+	std :: cout << "σ: " << sigma << '\n';
 	
-	std :: cout << '\n';
+	std :: cout << "m: " << m << '\n'; 
 	
+	std :: cout << "ε: " << epsilon << '\n';
+	
+
 	// Calling the simulation algorithm
 	
 	Verlet (X_old, V_old);
@@ -112,22 +57,24 @@ LennJon:: LennJon (size_t set_grid_size, ld time_step, ld total_time, ld set_sig
 	
 	mem.dealloc_grid (V_old);
 	
-	mem.dealloc_arr (M);
-	
 } // The constructor definition does not get a semi-colon at the end 
-	
-// Middle step for the positions, used in the Verlet integration algorithm
 
-void LennJon:: X_step (ld **X_mid, ld ** X_old, ld **V_old) {
-	
-	for (i = 0; i < grid_size; i ++) {
+
+//------------------------ General simulation modules  ------------------------
+
+// Starts the simulation with the particles placed in a cube
+
+void LennJon :: init_grid_cube (void) {
+
+	for (i = 0; i < grid_size; i++) {
 		
-		for (j = 0; j < 3; j ++) {
-		
-			*(*(X_mid + i) + j) = *(*(X_old + i) + j) + dt * *(*(V_old + i) + j);
+		for (j = 0; j < 3; j++) {
+			
+			*(*(X_old + i) + j) = 
 		}
 	}
 }
+
 
 // Module that updates old to new coordinates of all particles
 
@@ -140,12 +87,11 @@ void LennJon :: update (ld **old_coord, ld **new_coord) {
 			*(*(old_coord + i) + j) = *(*(new_coord + i) + j);
 		}
 	}
-
 }
 
 // Module that computes the distance between two particles 
 
-Mem:: ld LennJon:: dis (ld *x, ld *y) {
+LennJon :: ld LennJon:: dis (ld *x, ld *y) {
 
 	ld s = 0., d;
 	
@@ -158,6 +104,8 @@ Mem:: ld LennJon:: dis (ld *x, ld *y) {
 	
 	return sqrt (s);
 }
+
+// Force module 
 
 void LennJon:: force (ld **F, ld **X) {
 	
@@ -190,6 +138,31 @@ void LennJon:: force (ld **F, ld **X) {
 	}
 }
 
+void LennJon :: init_grid_cube (ld **X, ld L) {
+
+}
+
+void  LennJon :: init_vel_rand (ld **V) {
+
+}
+
+
+//------------------------ Verlet integration modules ------------------------
+
+// Middle step for the positions, used in the Verlet integration algorithm
+
+void LennJon :: X_step (ld **X_mid, ld ** X_old, ld **V_old) {
+	
+	for (i = 0; i < grid_size; i ++) {
+		
+		for (j = 0; j < 3; j ++) {
+		
+			*(*(X_mid + i) + j) = *(*(X_old + i) + j) + dt * *(*(V_old + i) + j);
+		}
+	}
+}
+
+
 
 // Verlet algorithm module  
 
@@ -202,8 +175,6 @@ void LennJon :: Verlet (ld **X_old, ld **V_old) {
 	X_mid = mem.alloc_grid ();
 	
 	X_new = mem.alloc_grid ();
-	
-	dX = mem.alloc_grid ();
 	
 	V_new = mem.alloc_grid ();
 	
@@ -227,13 +198,13 @@ void LennJon :: Verlet (ld **X_old, ld **V_old) {
 				
 				// Position update
 				
-				*(*(dX + i) + j) = *(*(X_mid + i) + j) - *(*(X_old + i) + j) + *(*(F_mid + i) + j) / *(M + i) * dt * dt;
+				dX =  *(*(X_mid + i) + j) - *(*(X_old + i) + j) + *(*(F_mid + i) + j) / m * dt * dt;
 				
-				*(*(X_new + i) + j) = *(*(X_mid + i) + j) + *(*(dX + i) + j);
+				*(*(X_new + i) + j) = *(*(X_mid + i) + j) + dX;
 				
 				// Velocity update for the calculation of the kinetic energy
 				
-				*(*(V_new + i) + j) = *(*(dX + i) + j) / dt + (5 * *(*(F_mid + i) + j) - 2 * *(*(F_old + i) + j)) / (6 * *(M + i)) * dt;
+				*(*(V_new + i) + j) = dX / dt + (5 * *(*(F_mid + i) + j) - 2 * *(*(F_old + i) + j)) / (6 * m) * dt;
 				
 			}
 		}
@@ -250,8 +221,6 @@ void LennJon :: Verlet (ld **X_old, ld **V_old) {
 	// Memory deallocation
 	
 	mem.dealloc_grid (X_mid);
-	
-	mem.dealloc_grid (dX);
 	
 	mem.dealloc_grid (X_new);
 	
