@@ -4,8 +4,6 @@
 # include <fstream>
 # include <cstdlib>
 
-
-
 class Mem {
 
 	public:
