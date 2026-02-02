@@ -43,8 +43,8 @@ class Ising {
         // -------------------- Simulation modules --------------------
 
         void set_system (void); // Starts the system's configuration.
-
-        ld H (size_t, bool); // Computes the energy of a configuration.
+        
+        ld H (size_t, bool); // Computes the total energy of the chain.
 
         ld M_avg_exact (ld); // Computes the exact total magnetization / spin.
 

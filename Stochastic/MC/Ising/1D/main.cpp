@@ -9,11 +9,11 @@ int main (void) {
 
     std :: cout << std :: fixed << std :: setprecision (20);
 
-    size_t N = 500, C = 500;
+    size_t N = 500, C = 1000;
 
-    ld B = 5., mu = 2., J = -2.;
+    ld B = 5., mu = -1., J = -2.;
 
-    std :: string config = "random";
+    std :: string config = "up";
 
     // Throught this simulation the Boltzmann constant kB is set to unity
 
@@ -36,7 +36,7 @@ int main (void) {
 
     // Calls the simulation algorithm 
 
-    Ising sim(N, C, config, mu, B, J, &(*(T + 0)), T_size);
+    Ising sim (N, C, config, mu, B, J, &(*(T + 0)), T_size);
 
     delete [] T;
 

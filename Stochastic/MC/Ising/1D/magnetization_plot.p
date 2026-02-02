@@ -1,8 +1,8 @@
 set encoding utf8
 
-set title 'MC simulation vs exact magnetization' font "Times-Roman, 18"
-set xlabel "β" font "Times-Roman, 18"
-set ylabel "M" font "Times-Roman, 18"
+set title '1D Ising model magnetization, N = 500' font "Times-Roman, 18"
+set xlabel "T" font "Times-Roman, 18"
+set ylabel "<M>" font "Times-Roman, 18"
 set xrange [0:101]
 set yrange [0:1]
 

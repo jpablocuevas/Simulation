@@ -46,7 +46,7 @@ ld Ising :: rand_num (ld a, ld b) {
 
 void Ising :: set_system (void) {
 
-    ld rand_num;
+    ld alpha;
     
     size_t i;
 
@@ -70,9 +70,9 @@ void Ising :: set_system (void) {
 
     for (i = 0; i < N; i ++) {
 
-            rand_num = (ld) rand () / RAND_MAX;
+            alpha = rand_num (0., 1.);
 
-            if (rand_num > 0.5) {
+            if (alpha > 0.5) {
 
                 *(S + i) = 1;
             }
@@ -86,6 +86,13 @@ void Ising :: set_system (void) {
 }
 
 ld Ising :: H (size_t spin, bool flip) {
+
+    // This ensures that the last atom is sometimes randomly selected
+
+    if (spin == N) {
+
+        spin = N - 1;
+    }
 
     ld M_energy = 0, J_energy = 0;
 
@@ -101,6 +108,8 @@ ld Ising :: H (size_t spin, bool flip) {
         if (i == N - 1) {
             
             M_energy = M_energy + *(S + i);
+
+            J_energy = J_energy + *(S + N - 1) * *(S + 0);
 
             continue;
         }
@@ -128,17 +137,20 @@ void Ising :: Metropolis (ld *T, size_t T_size) {
 
         for (j = 0; j < C; j ++) {
 
+            // Chooses a random atom whose spin is to be flipped. It goes up to N so that the last 
+            // atom of the chain can also be chosen. 
+
+            spin = (size_t) rand_num (0, N); 
+
             H_old = H (spin, false); // Computes the energy without the flipped spin on an atom.
 
-            spin = (size_t) rand_num (0, N - 1); // Chooses a random atom whose spin is to be flipped.
-
-            H_new = H (spin, true); // Computes the energy due to the flipped spin. 
+            H_new = H (spin, true); // Computes the energy due to the flipped spin.
 
             dH = H_new - H_old;
 
             if (dH > 0) {
 
-                if (rand_num (0, 1) > exp (- dH / *(T + i))) {
+                if (rand_num (0., 1.) > exp (- dH / *(T + i))) {
                     
                     // Flips back the spin on the atom. New configuration is rejected.
 
@@ -155,7 +167,7 @@ void Ising :: Metropolis (ld *T, size_t T_size) {
             }
         }
 
-       *(M_sim_arr + i) = mu * M_avg_sim ();
+       *(M_sim_arr + i) =  mu * M_avg_sim () / N;
     }
 
     // File for plotting 
