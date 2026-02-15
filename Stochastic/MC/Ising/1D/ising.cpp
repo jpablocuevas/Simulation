@@ -167,7 +167,7 @@ void Ising :: Metropolis (ld *T, size_t T_size) {
             }
         }
 
-       *(M_sim_arr + i) =  mu * M_avg_sim () / N;
+       *(M_sim_arr + i) =  abs (mu * M_avg_sim ()) / N;
     }
 
     // File for plotting 
