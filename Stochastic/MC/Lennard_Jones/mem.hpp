@@ -8,6 +8,8 @@
 
 // ---------------------------- Memory allocation class ----------------------
 
+typedef long double ld;
+
 class Mem {
 
 	public:
@@ -21,18 +23,16 @@ class Mem {
 		Mem (size_t, size_t); // Sets grid.
 
 		Mem (size_t); // Sets arr.
-		
-		typedef long double ld;
-
+	
 		size_t i, j, k; // Used for cycles. 
 
 		size_t n, m, l; // Sizes of tens, grid and arr.
 
-		ld ***tens = NULL; // tens pointer
+		ld ***tens = nullptr; // tens pointer
 		
-		ld **grid = NULL; // grid pointer
+		ld **grid = nullptr; // grid pointer
 
-		ld *arr = NULL; // arr pointer
+		ld *arr = nullptr; // arr pointer
 		
 		std :: fstream file; // File object to print particles coordinates. 
 		

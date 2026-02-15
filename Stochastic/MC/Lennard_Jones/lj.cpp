@@ -12,16 +12,15 @@ LennJon :: LennJon (size_t parts_cell, size_t n_cells, ld *L, ld *delta, ld T, l
 
     for (i = 0; i < 3; i ++) {
 
-        this -> L[i] = *(L + i); // I do not use pointer notation here because it does not compile
+        // I do not use pointer notation here because it does not compile
+
+        this -> L[i] = *(L + i); 
 
         this -> delta[i] = *(delta + i);
-    }
 
-    for (i = 0; i < 3; i ++) {
+        // Sets the distance among particles along the three Cartesian axes.
 
-        *(dx + i) = *(L + i) / (ld) pow (parts_cell, 1. / 3.); // Sets the distance between particles
-
-        *(n_part + i) = 1; // Stars the particle counter per side of the box at one
+        *(dx + i) = *(L + i) / (ld) pow (parts_cell, 1. / 3.);
     }
 
     this -> T = T; 
@@ -40,17 +39,23 @@ LennJon :: LennJon (size_t parts_cell, size_t n_cells, ld *L, ld *delta, ld T, l
 
     for (i = 0; i < 3; i ++) {
 
-        *(n + i) = - (size_t) pow (L, 1. / 3.); // Starts the lattice vector in the last cell
-    }
+        *(n + i) = - short (n_cells) / 3; // Starts the lattice vector in the last cell
+    }   
 
-    for (i = 0; i < n_cells; i ++) { // Setting every cell in a cubic array 
+    /*for (i = 0; i < n_cells; i ++) { // Setting every cell in a cubic array 
 
         set_grid_cube (*(X + i), &(*(n + 0)));
 
         for (j = 0; j < 3; j ++) {
 
         }
-    }
+    }*/
+
+    set_grid_cube (*(X + 0), &(*(n + 0)));
+
+    print_grid (*(X + 0));
+
+    create_file (*(X + 0), 0);
     
     // Simulation
 
@@ -63,7 +68,14 @@ LennJon :: LennJon (size_t parts_cell, size_t n_cells, ld *L, ld *delta, ld T, l
 
 //------------------- Simulation methods -------------------  
 
-void LennJon :: set_grid_cube (ld **grid, size_t *n) {
+void LennJon :: set_grid_cube (ld **grid, short *n) {
+
+     // Stars the particle counter per side of the box at one.
+
+     for (i = 0; i < 3; i ++) {
+
+        *(n_part + i) = 1;
+     }
 
     for (i = 0; i < parts_cell; i ++) {
 
@@ -93,11 +105,11 @@ void LennJon :: set_grid_cube (ld **grid, size_t *n) {
     }
 }
 
-LennJon :: ld LennJon :: dis (ld *x, ld *y) {
+ld LennJon :: dis (ld *x, ld *y) {
 
     ld s = 0;
 
-    for (unsigned int i_loc = 0; i_loc < 3; i_loc ++) {
+    for (size_t i = 0; i < 3; i ++) {
 
         s = s + pow (*(x + i) - *(y + i), 2);
     }
@@ -105,7 +117,7 @@ LennJon :: ld LennJon :: dis (ld *x, ld *y) {
     return sqrt (s);
 }
 
-LennJon :: ld  LennJon :: my_rand (ld a, ld b) {
+    ld  LennJon :: my_rand (ld a, ld b) {
 
     ld min = a;
 
@@ -114,10 +126,10 @@ LennJon :: ld  LennJon :: my_rand (ld a, ld b) {
         min = b;
     }
 
-    return ((ld) abs (b - a) * (ld) rand () / RAND_MAX) + min;
+    return (ld) abs (b - a) * (ld) rand () / RAND_MAX + min;
 }
 
-LennJon :: ld LennJon :: U_LJ (size_t part) {
+    ld LennJon :: U_LJ (size_t part) {
 
     ld U = 0, d;
 
@@ -125,7 +137,6 @@ LennJon :: ld LennJon :: U_LJ (size_t part) {
 
         for (j = 0; j < parts_cell; j ++) {
 
-            d = dis (*(X + i))
         }
     }
 
@@ -151,13 +162,6 @@ void LennJon :: Metropolis (void) {
 
         part = (size_t) my_rand (0, parts_cell * n_cells  - 1);
 
-        std :: cout << part << '\n';
-
-        U_old = U_LJ (part);
-
-        LennJon :: move (part);
-
-        U_new = U_LJ (part);
 
         t = t + dt;
     }

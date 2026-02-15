@@ -2,11 +2,11 @@
 
 int main (void) {
 
-    Mem :: ld ***tens1, ***tens2;
+    ld ***tens1, ***tens2;
 
-    Mem :: ld ** grid1, **grid2;
+    ld ** grid1, **grid2;
     
-    Mem :: ld *arr1, *arr2;
+    ld *arr1, *arr2;
 
     Mem mem_tens (3, 4, 3), mem_grid (5, 6), mem_arr (10);
 

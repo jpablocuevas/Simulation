@@ -2,7 +2,7 @@
 
 // ---------------------------- Mem allocation methods ----------------------
 
-// Constructor overloading to set arr, grid or tens
+// Constructor overloading to set tens, grid or arr
 
 Mem :: Mem (void) {
 
@@ -44,7 +44,7 @@ void Mem :: get_arr_size (void) {
 	std :: cout << "Array size: arr[" << l << ']' << '\n';
 }
 
-Mem :: ld *** Mem :: alloc_tens (void) {
+	ld *** Mem :: alloc_tens (void) {
 
 	tens = new ld **[n];
 
@@ -82,7 +82,7 @@ Mem :: ld *** Mem :: alloc_tens (void) {
 	return tens;
 }
 
-Mem :: ld **Mem :: alloc_grid (void) {
+	ld **Mem :: alloc_grid (void) {
 
 	grid = new ld *[m];
 	
@@ -108,11 +108,11 @@ Mem :: ld **Mem :: alloc_grid (void) {
 	return grid;
 }
 
-Mem :: ld *Mem :: alloc_arr (void) {
+	ld *Mem :: alloc_arr (void) {
 
 	arr = new ld [l];
 
-	if (arr == NULL) {
+	if (arr == nullptr) {
 		
 		std :: cout << "Mem allocation failed!" << '\n';
 			
