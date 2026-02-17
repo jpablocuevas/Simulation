@@ -18,7 +18,11 @@ Ising :: Ising (size_t L, size_t C, std :: string set_grid, ld J, ld B, ld *beta
 
     S = alloc_matrix ();
 
-    m = new ld [C];
+    M_arr = new ld [C];
+
+    M_avg_arr = new ld [beta_size];
+
+    m_avg_arr = new ld [C];
 
     // Initial conditions
 
@@ -32,7 +36,11 @@ Ising :: Ising (size_t L, size_t C, std :: string set_grid, ld J, ld B, ld *beta
 
     dealloc_matrix ();
 
-    delete [] m;
+    delete [] M_arr;
+
+    delete [] M_avg_arr;
+
+    delete [] m_avg_arr;
 }
 
 void Ising :: init_grid (void) {
@@ -126,7 +134,59 @@ ld Ising :: H (size_t x, size_t y, bool flip) {
         }
     }
 
-    return - J * J_sum - B * B_sum;
+    return - J * J_sum / 2. - B * B_sum; // We divide by two because each atom in a bond is counted twice.
+}
+
+ld Ising :: M_avg_analytical (ld beta) {
+
+    return ld (pow (1. - 1. / pow (sinh (2. * J * beta), 4.), 1. / 8.));
+}
+
+ld Ising :: M_total (void) {
+
+    ld M = 0.;
+
+    size_t i, j;
+
+    for (i = 1; i < L + 1; i ++) {
+
+        for (j = 1; j < L + 1; j ++) {
+
+            M = M + *(*(S + i) + j);
+        }
+    }
+
+    return abs(M); // We return the total magnetization in the absolute value. 
+}
+
+ld Ising :: M_avg_sim () {
+
+    ld s = 0.;
+
+    for (size_t i = 0; i < C; i ++) {
+
+        s = s + *(M_arr + i);
+    }
+
+    return s / C;
+}
+
+ld Ising :: rand_num (ld a, ld b) {
+
+    return  (ld) abs (b - a) * (ld) rand () / RAND_MAX + a;
+}
+
+void Ising :: magnetization_data (ld *x, ld *y, ld *z, size_t size, std :: string name) {
+
+    file.open (name + ".txt", std :: ios :: out);
+
+    for (size_t i = 0; i < size; i ++) {
+
+        file << *(x + i) << ' ' << *(y + i) << ' ' << *(z + i) << '\n';
+    }
+
+    file.close ();
+
 }
 
 void Ising :: Metropolis (ld *beta, size_t beta_size) {
@@ -140,6 +200,14 @@ void Ising :: Metropolis (ld *beta, size_t beta_size) {
     ld *cycles;
 
     cycles = new ld [C];
+
+    // Monte-Carlo loop
+
+    std :: cout << "Simulation starting... \n";
+    
+    std :: cout << "β = " << *(beta + 0) << '\n';
+
+    std :: cout << "Initial configuration: " << set_grid << '\n';
 
     for (i = 0; i < beta_size; i ++) {
 
@@ -166,47 +234,49 @@ void Ising :: Metropolis (ld *beta, size_t beta_size) {
                 if (rand_num (0., 1.) > exp (*(beta + i) * dH)) {
 
                     // Since the function H changes the spin, if the configuration is rejected
-                    // the spin is switched back to its original value. If accepted, nothin else
+                    // the spin is switched back to its original value. If accepted, nothing else
                     // happens. 
 
                     *(*(S + x_part) + y_part) = - 1. * *(*(S + x_part) + y_part);
                 }
             }     
             
-            *(m + j) = M_avg_sim () / ld (L * L); 
+            //*(M_arr + j) = M_total ();
+
+            *(m_avg_arr + j) = M_total () / ld (L * L); // Mean magnetization per site.
 
             *(cycles + j) = ld (j);
         }
 
-        create_file (cycles, m, C, "thermalization_data");
+        *(M_avg_arr + i) = M_avg_sim ();
+
+        // Thermalization file
+
+        create_file (cycles, m_avg_arr, C, "thermalization_data");
     }
+
+    std :: cout << "Simulation finished. \n";
+
+    // Magnetization data file
+
+    /*ld *J_arr, *M_analytical_arr;
+
+    J_arr = new ld [beta_size];
+
+    M_analytical_arr = new ld [beta_size];
+
+    for (size_t i = 0; i < beta_size; i ++) {
+
+        *(J_arr + i) = 1 / (*(beta + i) * J);
+
+        *(M_analytical_arr + i) = M_avg_analytical (*(beta + i));
+    }
+
+    magnetization_data (J_arr, M_analytical_arr, M_avg_arr, beta_size, "magnetization_data");
+
+    delete [] J_arr;
+
+    delete [] M_analytical_arr;*/
 
     delete [] cycles;
  }
-
-ld Ising :: M_avg_analytical (ld beta) {
-
-    return pow (1. - 1 / pow (sinh (2. * J * beta), 4), 1. / 8.);
-}
-
-ld Ising :: M_avg_sim (void) {
-
-    ld M = 0.;
-
-    size_t i, j;
-
-    for (i = 1; i < L + 1; i ++) {
-
-        for (j = 1; j < L + 1; j ++) {
-
-            M = M + *(*(S + i) + j);
-        }
-    }
-
-    return abs (M);
-}
-
-ld Ising :: rand_num (ld a, ld b) {
-
-    return  (ld) abs (b - a) * (ld) rand () / RAND_MAX + a;
-}

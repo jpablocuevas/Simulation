@@ -48,7 +48,7 @@ class Ising {
 
         ld M_avg_exact (ld); // Computes the exact total magnetization / spin.
 
-        ld M_avg_sim (void); // Computes the simulated total magnetization / spin.
+        ld M_tot_sim (void); // Computes the simulated total magnetization / spin.
 
         void Metropolis (ld *, size_t); // Metropolis algorithm simulation.
        

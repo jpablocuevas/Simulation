@@ -118,7 +118,7 @@ ld Ising :: H (size_t spin, bool flip) {
             
     }
 
-    return - mu * B * M_energy - J * J_energy;
+    return - mu * B * M_energy - J * J_energy / 2.; // We divide by two beacause we count pair interactions, not atoms.
 }
 
 void Ising :: Metropolis (ld *T, size_t T_size) {
@@ -167,7 +167,7 @@ void Ising :: Metropolis (ld *T, size_t T_size) {
             }
         }
 
-       *(M_sim_arr + i) =  abs (mu * M_avg_sim ()) / N;
+       *(M_sim_arr + i) =  abs (mu * M_tot_sim ()) / N;
     }
 
     // File for plotting 
@@ -180,7 +180,7 @@ ld Ising :: M_avg_exact (ld T) {
     return (ld) mu * sinh (mu * B / T) / sqrt (pow (sinh (mu * B / T), 2) + exp (4 * J / T));
 }
 
-ld Ising :: M_avg_sim (void) {
+ld Ising :: M_tot_sim (void) {
 
     ld M = 0;
 

@@ -9,11 +9,11 @@ int main (void) {
 
     std :: cout << std :: fixed << std :: setprecision (10);
 
-    size_t L = 40, C = 1000;
+    size_t L = 100, C = 10000;
 
-    std :: string init_grid = "random";
+    std :: string init_grid = "up";
 
-    ld J = 5, H = 3;
+    ld J = 1., B = 0.;
 
     ld *beta;
 
@@ -21,7 +21,7 @@ int main (void) {
 
     beta = new ld [beta_size];
 
-    /*ld beta_0 = 0., dbeta = 0.5;
+    /*ld beta_0 = 1. / 10., dbeta = 0.05;
 
     for (size_t i = 0; i < beta_size; i ++) {
 
@@ -30,9 +30,9 @@ int main (void) {
         beta_0 = *(beta + i);
     }*/
 
-    *(beta + 0) = 0.5;
+    *(beta + 0) = 0.48;
 
-    Ising sim (L, C, init_grid, J, H, &*(beta + 0), beta_size);
+    Ising sim (L, C, init_grid, J, B, &*(beta + 0), beta_size);
 
     delete [] beta;
 

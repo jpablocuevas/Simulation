@@ -13,7 +13,7 @@ int main (void) {
 
     ld B = 5., mu = -1., J = -2.;
 
-    std :: string config = "up";
+    std :: string config = "random";
 
     // Throught this simulation the Boltzmann constant kB is set to unity
 
