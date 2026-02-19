@@ -243,7 +243,7 @@ void Ising :: Metropolis (ld *beta, size_t beta_size) {
             
             //*(M_arr + j) = M_total ();
 
-            *(m_avg_arr + j) = M_total () / ld (L * L); // Mean magnetization per site.
+            *(m_avg_arr + j) = M_total () / ld (L * L); // Total magnetization per site.
 
             *(cycles + j) = ld (j);
         }
