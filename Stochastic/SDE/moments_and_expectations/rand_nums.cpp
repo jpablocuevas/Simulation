@@ -3,6 +3,8 @@
 
 Rand_nums :: Rand_nums (ull X_0, ull a, ull b, ull c, size_t U_size) {
 
+    std :: cout << std :: fixed << std :: setprecision (10);
+
     this -> X_0 = X_0;
 
     this -> a = a;
@@ -15,12 +17,35 @@ Rand_nums :: Rand_nums (ull X_0, ull a, ull b, ull c, size_t U_size) {
     
 }
 
+Rand_nums :: Rand_nums () {
+
+    long int seed = 13465784931339969;
+
+    t = time (&seed);
+
+    srand (t);
+
+    std :: cout << std :: fixed << std :: setprecision (10);
+
+    a = ull (pow (7, 5));
+
+    b = 0;
+    
+    c = ull (pow (2, 31) - 1);
+
+    X_0 = ull (rand ());
+
+    U_size = 214748339;
+}
+
 
 ld * Rand_nums :: Lin_Cong_dis (void) {
 
     ld *U = new ld [U_size];
 
     *(U + 0) = ld (X_0) / c;
+
+    std :: cout << "Generating random numbers... \n";
 
     for (size_t i = 1; i < U_size; i ++) {
 
@@ -30,6 +55,8 @@ ld * Rand_nums :: Lin_Cong_dis (void) {
 
         X_0 = X_1;
     }
+
+    std :: cout << "Algorithm completed.\n";
 
     return U;
 }
@@ -168,6 +195,15 @@ ld ** Rand_nums :: Polar_Marsiaga_dis (void) {
     std :: cout << "Algorithm completed.\n";
 
     return X;
+}
+
+void Rand_nums :: print_parameters (void) {
+
+    std :: cout << "Initial seed: " << t << '\n';
+
+    std :: cout << "a = " << a << ", b = " << b << ", c = " << c << '\n';
+    
+    std :: cout << "X_0 = " << X_0 << ", U_size = " << U_size << '\n'; 
 }
 
 void Rand_nums :: print_arr (ld *X, size_t X_size) {

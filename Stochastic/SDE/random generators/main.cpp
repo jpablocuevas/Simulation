@@ -14,13 +14,13 @@ int main (void) {
 
     size_t U_size = 21474833;
     
-    Rand_nums rand (X_0, a, b, c, U_size);
+    Rand_nums random (X_0, a, b, c, U_size);
 
     ld *U, *X_2_point, *X_exp;
 
-    U = rand.Lin_Cong_dis ();
+    U = random.Lin_Cong_dis ();
 
-    rand.print_arr (U, 30);
+    random.print_arr (U, 30);
 
     delete [] U;
 
@@ -28,9 +28,9 @@ int main (void) {
 
     ld x_1 = -1, x_2 = 1, p_1 = 0.5;
 
-    X_2_point = rand.Two_Point_dis (x_1, x_2, p_1);
+    X_2_point = random.Two_Point_dis (x_1, x_2, p_1);
 
-    rand.print_arr (X_2_point, 20);
+    random.print_arr (X_2_point, 20);
 
     delete [] X_2_point;
 
@@ -38,9 +38,9 @@ int main (void) {
 
     ld lambda = 2.;
 
-    X_exp = rand.Exp_dis (lambda);
+    X_exp = random.Exp_dis (lambda);
 
-    rand.print_arr (X_exp, 30);
+    random.print_arr (X_exp, 30);
 
     delete [] X_exp;
 
@@ -48,11 +48,11 @@ int main (void) {
 
     ld **X_box_muller; 
 
-    X_box_muller = rand.Box_Muller_dis ();
+    X_box_muller = random.Box_Muller_dis ();
 
-    rand.print_arr (*(X_box_muller + 0), 20);
+    random.print_arr (*(X_box_muller + 0), 20);
 
-    rand.print_arr (*(X_box_muller + 1), 20);
+    random.print_arr (*(X_box_muller + 1), 20);
 
     delete [] *(X_box_muller + 0);
 
@@ -64,11 +64,11 @@ int main (void) {
 
     ld **X_polar_marsiaga;
 
-    X_polar_marsiaga = rand.Polar_Marsiaga_dis ();
+    X_polar_marsiaga = random.Polar_Marsiaga_dis ();
 
-    rand.print_arr (*(X_polar_marsiaga + 0), 20);
+    random.print_arr (*(X_polar_marsiaga + 0), 20);
 
-    rand.print_arr (*(X_polar_marsiaga + 1), 20);
+    random.print_arr (*(X_polar_marsiaga + 1), 20);
 
     delete [] *(X_polar_marsiaga + 0);
 

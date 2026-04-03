@@ -1,14 +1,15 @@
 # include "stats.hpp"
 
-Stats :: Stats (ld *x, size_t x_size) {
+Stats :: Stats (ld *data, size_t data_size) {
+
+    x_size = data_size;
 
     x = new ld [x_size];
 
     for (size_t i = 0; i < x_size; i ++) {
 
-        this -> x[i] = x[i];
+        *(x + i) = *(data + i);
     }
-
 }
 
 ld Stats :: E_X (void) {
@@ -35,4 +36,9 @@ ld Stats :: Var_X (void) {
     }
 
     return sigma_2 / ld (x_size - 1);
+}
+
+void Stats :: clear_data (void) {
+
+    delete [] x;
 }

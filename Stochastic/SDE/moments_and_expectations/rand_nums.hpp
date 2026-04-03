@@ -14,9 +14,16 @@ class Rand_nums {
 
     public:
 
+        // The constructor is overloaded to allow the modification of the U (0, 1) uniform
+        // distribution parameters.
+
         Rand_nums (ull X_0, ull a, ull b, ull c, size_t U_size);
 
+        Rand_nums ();
+
         void print_arr (ld *, size_t);
+
+        void print_parameters (void);
 
         ld * Lin_Cong_dis (void); // Linear congruential generator. Uniform distribution in (0, 1).
 
@@ -33,4 +40,6 @@ class Rand_nums {
         ull X_0, X_1, a, b, c; // U (0, 1) uniform distribution parameters.
         
         size_t U_size; // Uniform distribution array size.
+
+        time_t t; // Time variable to generate random seed.
 };

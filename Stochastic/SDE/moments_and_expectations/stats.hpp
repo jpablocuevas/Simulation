@@ -3,6 +3,7 @@
 # include <new>
 # include <cmath>
 # include <cstdlib>
+# include "rand_nums.hpp"
 
 typedef long double ld;
 
@@ -15,6 +16,8 @@ class Stats {
         ld E_X (void);
 
         ld Var_X (void);
+
+        void clear_data (void);
     
     private:
 
