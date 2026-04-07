@@ -11,17 +11,9 @@ class Stats {
 
     public: 
 
-        Stats (ld *, size_t);
+        Stats ();
 
-        ld E_X (void);
+        ld E_X (ld *, size_t);
 
-        ld Var_X (void);
-
-        void clear_data (void);
-    
-    private:
-
-        ld *x = nullptr;
-
-        size_t x_size;
+        ld Var_X (ld *, size_t);
 };

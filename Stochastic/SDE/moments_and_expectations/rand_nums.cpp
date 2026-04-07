@@ -38,6 +38,27 @@ Rand_nums :: Rand_nums () {
     U_size = 214748339;
 }
 
+Rand_nums :: Rand_nums (size_t U_size) {
+
+    long int seed = 13465784931339969;
+
+    t = time (&seed);
+
+    srand (t);
+
+    std :: cout << std :: fixed << std :: setprecision (10);
+
+    a = ull (pow (7, 5));
+
+    b = 0;
+    
+    c = ull (pow (2, 31) - 1);
+
+    X_0 = ull (rand ());
+
+    this -> U_size = U_size;
+}
+
 
 ld * Rand_nums :: Lin_Cong_dis (void) {
 
@@ -45,7 +66,7 @@ ld * Rand_nums :: Lin_Cong_dis (void) {
 
     *(U + 0) = ld (X_0) / c;
 
-    std :: cout << "Generating random numbers... \n";
+    std :: cout << "Generating uniform U (0, 1) distribution... \n";
 
     for (size_t i = 1; i < U_size; i ++) {
 
@@ -56,7 +77,7 @@ ld * Rand_nums :: Lin_Cong_dis (void) {
         X_0 = X_1;
     }
 
-    std :: cout << "Algorithm completed.\n";
+    std :: cout << "Distribution generated.\n";
 
     return U;
 }
@@ -207,6 +228,14 @@ void Rand_nums :: print_parameters (void) {
 }
 
 void Rand_nums :: print_arr (ld *X, size_t X_size) {
+
+    for (size_t i = 0; i < X_size; i ++) {
+
+        std :: cout << *(X + i) << '\n';
+    }
+}
+
+void Rand_nums :: print_arr (size_t *X, size_t X_size) {
 
     for (size_t i = 0; i < X_size; i ++) {
 

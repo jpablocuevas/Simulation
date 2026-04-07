@@ -21,7 +21,11 @@ class Rand_nums {
 
         Rand_nums ();
 
+        Rand_nums (size_t U_size);
+
         void print_arr (ld *, size_t);
+
+        void print_arr (size_t *, size_t);
 
         void print_parameters (void);
 
